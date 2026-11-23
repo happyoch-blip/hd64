@@ -251,7 +251,7 @@ ol.guide b{font-family:Jua;font-weight:400;font-size:18px}
 <!-- 2 -->
 <section class="panel" id="p2">
   <h2>2. 나의 글</h2>
-  <p class="lead">주제 15개마다 제목과 나의 글을 써요. 제목은 내 마음대로 바꿔도 돼요. 마음에 안 드는 주제는 '주제 바꾸기'를 눌러요.</p>
+  <p class="lead">주제 15개마다 제목과 나의 글을 써요. 제목은 내 마음대로 바꿔도 돼요. 마음에 안 드는 주제는 '주제 바꾸기'를 누르고, 쓰고 싶은 주제가 따로 있으면 '내 주제 쓰기'를 눌러요.</p>
   <div class="prog" aria-hidden="true"><i id="wprog"></i></div>
   <p class="note" id="wcount" style="margin-top:-12px"></p>
   <div class="card">
@@ -777,20 +777,24 @@ imgPair('cimg','cimgPrev','cimgDel',()=>S.cover.img,v=>S.cover.img=v);
 imgPair('photo','photoPrev','photoDel',()=>S.cover.photo,v=>S.cover.photo=v);
 
 /* 나의 글 15편 */
-function wCard(w,i){return `<div class="wcard" data-i="${i}"><div class="whead"><span class="wnum">${i+1}</span><div><div class="wtopic">${esc(w.topic)}</div><div class="whint">${esc(w.hint)}</div></div></div>
+function wCard(w,i){const head=w.mine?`<div style="flex:1"><label class="f" style="margin:0"><span>내가 정한 주제</span><input type="text" class="wtopicIn" maxlength="40" value="${esc(w.topic)}" placeholder="예: 우리 집 고양이의 비밀 일기"></label><div class="whint" style="margin-top:4px">내가 정한 주제로 자유롭게 써요.</div></div>`:`<div><div class="wtopic">${esc(w.topic)}</div><div class="whint">${esc(w.hint)}</div></div>`;
+ return `<div class="wcard" data-i="${i}"><div class="whead"><span class="wnum">${i+1}</span>${head}</div>
  <label class="f"><span>제목</span><input type="text" class="wtitle" maxlength="40" value="${esc(w.title)}"></label>
  <label class="f"><span>나의 글</span><textarea class="wtext" rows="7" placeholder="여기에 나의 글을 써요. 줄을 비우면 문단 사이가 한 줄 띄어져요.">${esc(w.text)}</textarea></label>
- <div class="wmeta"><span class="cnt">${[...(w.text||'')].length}자</span><span class="wimg">${w.img?`<img src="${w.img}" alt="">`:''}<label class="btn alt sm">그림 넣기<input type="file" accept="image/*" class="wfile" hidden></label>${w.img?'<button class="btn alt sm wdel">그림 빼기</button>':''}<button class="btn alt sm wswap">주제 바꾸기</button></span></div></div>`}
+ <div class="wmeta"><span class="cnt">${[...(w.text||'')].length}자</span><span class="wimg">${w.img?`<img src="${w.img}" alt="">`:''}<label class="btn alt sm">그림 넣기<input type="file" accept="image/*" class="wfile" hidden></label>${w.img?'<button class="btn alt sm wdel">그림 빼기</button>':''}${w.mine?'<button class="btn alt sm wback">추천 주제로</button>':'<button class="btn alt sm wmine">내 주제 쓰기</button><button class="btn alt sm wswap">주제 바꾸기</button>'}</span></div></div>`}
 function drawW(){$('wlist').innerHTML=S.w.map(wCard).join('')}
 drawW();
 $('wlist').addEventListener('input',e=>{const c=e.target.closest('.wcard');if(!c)return;const w=S.w[+c.dataset.i];
  if(e.target.classList.contains('wtitle'))w.title=e.target.value;
+ if(e.target.classList.contains('wtopicIn')){const old=w.topic;w.topic=e.target.value;if(!w.title||w.title===old){w.title=w.topic;c.querySelector('.wtitle').value=w.title}}
  if(e.target.classList.contains('wtext')){w.text=e.target.value;c.querySelector('.cnt').textContent=[...w.text].length+'자'}
  persist();refresh()});
 $('wlist').addEventListener('change',async e=>{if(!e.target.classList.contains('wfile'))return;const c=e.target.closest('.wcard'),i=+c.dataset.i,f=e.target.files[0];if(!f)return;
  try{S.w[i].img=await readImg(f,1200);c.outerHTML=wCard(S.w[i],i);persist();refresh(1)}catch(_){toast('그림을 읽지 못했어요.')}});
 $('wlist').addEventListener('click',e=>{const c=e.target.closest('.wcard');if(!c)return;const i=+c.dataset.i,w=S.w[i];
  if(e.target.classList.contains('wdel')){w.img=null;c.outerHTML=wCard(w,i);persist();refresh(1)}
+ if(e.target.classList.contains('wmine')){w.prev={topic:w.topic,hint:w.hint};const same=w.title===w.topic;w.mine=true;w.topic='';if(same)w.title='';c.outerHTML=wCard(w,i);const n=$('wlist').querySelector(`.wcard[data-i="${i}"] .wtopicIn`);if(n)n.focus();persist();refresh()}
+ if(e.target.classList.contains('wback')){const p=w.prev||TOPICS[i];const same=!w.title||w.title===w.topic;w.mine=false;w.topic=p.topic||p.t;w.hint=p.hint||p.h;if(same)w.title=w.topic;c.outerHTML=wCard(w,i);persist();refresh()}
  if(e.target.classList.contains('wswap')){const all=TOPICS.concat(EXTRA);const used=new Set(S.w.map(x=>x.topic));let k=S.pool||0,t=null;for(let g=0;g<all.length;g++){const cand=all[(k+g)%all.length];if(!used.has(cand.t)){t=cand;S.pool=(k+g+1)%all.length;break}}
   if(!t)return;const keep=w.title&&w.title!==w.topic;w.topic=t.t;w.hint=t.h;if(!keep)w.title=t.t;c.outerHTML=wCard(w,i);persist();refresh();toast(`새 주제: ${t.t}`)}});
 function updateCount(){const n=S.w.filter(w=>(w.text||'').trim()).length;$('wprog').style.width=(n/15*100)+'%';$('wcount').textContent=`15편 중 ${n}편 썼어요.`}
