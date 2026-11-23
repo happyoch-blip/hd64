@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>효덕초 6학년 4반 작가 프로젝트</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Gowun+Batang:wght@400;700&family=Nanum+Gothic:wght@400;700;800&family=Nanum+Myeongjo:wght@400;700&family=IBM+Plex+Sans+KR:wght@400;600&family=Jua&family=Do+Hyeon&family=Gaegu:wght@400;700&family=Black+Han+Sans&family=Yeon+Sung&family=Nanum+Pen+Script&family=Hi+Melody&family=Dongle:wght@400;700&family=Gamja+Flower&family=Sunflower:wght@500;700&family=Song+Myung&family=Gugi&display=swap">
+<style>
+/* VOICE: 교실 게시판처럼 밝고 또렷하게, 6학년 눈높이(유치하지 않게)
+   IDEA: 연필로 채워 가는 원고 묶음 — 단계마다 책이 한 장씩 쌓인다
+   PICTURE: 오른쪽에 실제 46판 펼침면 미리보기가 늘 떠 있다
+   COLOUR and TYPE: 연필 노랑 #ffc93c + 칠판 남색 #1f2a44 + 지우개 분홍 #ff7a8a / Jua + Gowun Dodum
+   LAYOUT: 왼쪽 단계 입력, 오른쪽 미리보기, 600px 아래는 위아래로 */
+:root{color-scheme:light dark;
+--bg:light-dark(#fbf8f1,#171b26);--ink:light-dark(#1f2a44,#eef0f6);--sub:light-dark(#5b6378,#a9b0c2);
+--card:light-dark(#ffffff,#212737);--line:light-dark(#e6e0d2,#343b4f);--pen:#ffc93c;--pink:#ff7a8a;--navy:#1f2a44;--ok:light-dark(#1f8a5b,#5fd39a);--warn:light-dark(#b4480e,#ffa36c)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html{scroll-padding-top:72px}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "Gowun Dodum",system-ui,sans-serif;overflow-x:clip}
+button,input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3{font-family:Jua,"Gowun Dodum",sans-serif;font-weight:400;line-height:1.15;text-wrap:balance;margin:0}
+a{color:inherit}
+.top{background:var(--pen);color:var(--navy);padding:22px max(4vw,16px) 0;position:relative;overflow:hidden}
+.top h1{font-size:clamp(30px,4.4vw,46px)}
+.top p{margin:6px 0 16px;max-width:62ch}
+.top .pencil{position:absolute;right:-30px;top:18px;width:min(46vw,420px);opacity:.95;pointer-events:none}
+.steps{display:flex;gap:6px;overflow-x:auto;padding-top:6px}
+.steps a{flex:none;text-decoration:none;padding:10px 16px 12px;border-radius:14px 14px 0 0;background:rgba(31,42,68,.1);font-family:Jua;font-size:17px;color:var(--navy)}
+.steps a b{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--navy);color:var(--pen);font-weight:400;margin-right:6px;font-size:14px}
+.steps a[aria-current=page]{background:var(--bg);color:var(--ink)}
+.steps a[aria-current=page] b{background:var(--pink);color:#fff}
+.wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:28px;padding:24px max(4vw,16px) 60px;max-width:1500px;margin:0 auto}
+@media(max-width:1000px){.wrap{grid-template-columns:minmax(0,1fr)}}
+.panel{display:none}.panel.on{display:block}
+.panel>h2{font-size:clamp(26px,3vw,34px);margin-bottom:6px}
+.lead{color:var(--sub);margin:0 0 18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:14px}
+.card h3{font-size:20px;margin-bottom:10px}
+label.f{display:block;margin-bottom:12px}
+label.f>span{display:block;font-size:14px;color:var(--sub);margin-bottom:4px}
+input[type=text],input[type=date],input[type=number],select,textarea{width:100%;border:1.5px solid var(--line);background:light-dark(#fff,#1a1f2c);border-radius:10px;padding:10px 12px;font-size:16px;min-height:44px}
+textarea{resize:vertical;line-height:1.7}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible,a:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+.btn{text-decoration:none;display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:10px 18px;border-radius:12px;border:0;background:var(--navy);color:#fff;font-family:Jua;font-size:17px;cursor:pointer}
+.btn.alt{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.btn.pen{background:var(--pen);color:var(--navy)}
+.btn:disabled{opacity:.5;cursor:wait}
+.btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
+.fixed{display:flex;gap:14px;align-items:center;background:light-dark(#fff6d6,#2c2a1e);border-radius:14px;padding:14px 16px;margin-bottom:14px}
+.fixed .sz{font-family:Jua;font-size:28px;white-space:nowrap}
+.note{font-size:14px;color:var(--sub)}
+details summary{cursor:pointer;color:var(--sub);font-size:15px;padding:6px 0}
+.check{display:flex;gap:10px;align-items:center;min-height:44px}
+.check input{width:22px;height:22px;accent-color:var(--pink)}
+/* 나의 글 */
+.wcard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 16px 12px;margin-bottom:14px;position:relative}
+.whead{display:flex;gap:10px;align-items:flex-start;margin-bottom:10px}
+.wnum{flex:none;width:38px;height:38px;border-radius:50%;background:var(--pen);color:var(--navy);display:grid;place-items:center;font-family:Jua;font-size:19px}
+.wtopic{font-family:Jua;font-size:18px;line-height:1.3}
+.whint{font-size:14px;color:var(--sub)}
+.wmeta{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;font-size:14px;color:var(--sub);margin-top:6px}
+.wmeta .sm{min-height:36px;padding:6px 12px;font-size:15px}
+.wimg{display:flex;align-items:center;gap:10px}
+.wimg img{width:48px;height:48px;object-fit:cover;border-radius:8px;border:1px solid var(--line)}
+.prog{height:10px;background:var(--line);border-radius:6px;overflow:hidden;margin:8px 0 18px}
+.prog i{display:block;height:100%;background:var(--pink);width:0;transition:width .3s}
+/* 디자인 고르기 */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:12px}
+.pick{background:none;border:2px solid transparent;border-radius:12px;padding:6px;cursor:pointer;text-align:center;color:var(--ink)}
+.pick[aria-pressed=true]{border-color:var(--pink);background:light-dark(#fff0f2,#3a2730)}
+.pick .th{display:block;width:100%;aspect-ratio:127/188;overflow:hidden;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,.18);position:relative;background:#fff}
+.pick .th>.pg{transform-origin:0 0;position:absolute;left:0;top:0}
+.pick .nm{display:block;font-family:Jua;font-size:15px;margin-top:6px;line-height:1.25}
+.pick .ds{display:block;font-size:12.5px;color:var(--sub);line-height:1.3}
+/* 미리보기 */
+.view{position:sticky;top:12px;align-self:start}
+@media(max-width:1000px){.view{position:static}}
+.vbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px}
+.tab{min-height:40px;padding:6px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);cursor:pointer;font-family:Jua;font-size:16px}
+.tab[aria-pressed=true]{background:var(--navy);color:#fff;border-color:var(--navy)}
+.stage{background:light-dark(#e9e4d8,#0f121a);border-radius:18px;padding:18px;overflow:hidden;min-height:300px;display:flex;justify-content:center;align-items:flex-start}
+.scaler{transform-origin:0 0}
+.spread{display:flex}
+.spread .ghost{width:127mm;height:188mm}
+.vnav{display:flex;gap:8px;align-items:center;justify-content:center;margin-top:10px;flex-wrap:wrap}
+.vnav .btn{min-width:48px;justify-content:center}
+.pinfo{font-family:Jua;font-size:17px;min-width:120px;text-align:center}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:14px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.stat b{display:block;font-family:Jua;font-weight:400;font-size:30px;line-height:1.1}
+.stat span{font-size:14px;color:var(--sub)}
+.ok{color:var(--ok)}.warn{color:var(--warn)}
+ol.guide{padding-left:1.3em;margin:0}
+ol.guide>li{margin-bottom:14px}
+ol.guide b{font-family:Jua;font-weight:400;font-size:18px}
+.kv{display:grid;grid-template-columns:8em minmax(0,1fr);gap:4px 12px;font-size:15px;margin:6px 0}
+.kv dt{color:var(--sub)}.kv dd{margin:0}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--navy);color:#fff;padding:12px 18px;border-radius:12px;z-index:50;opacity:0;transition:opacity .25s;pointer-events:none;max-width:90vw}
+.toast.on{opacity:1}
+#measure{position:absolute;left:-30000px;top:0}
+#work{position:absolute;left:-60000px;top:0}
+#printRoot{display:none}
+@media print{
+  body.printing>*:not(#printRoot){display:none!important}
+  body.printing #printRoot{display:block}
+  body.printing #printRoot .pg{break-after:page;box-shadow:none}
+  body.printing{background:#fff}
+}
+@media (prefers-reduced-motion:reduce){.prog i{transition:none}}
+
+/* ───── 책 쪽 (46판 127×188mm) ───── */
+.pg{width:133mm;height:194mm;position:relative;overflow:hidden;background:var(--bgc);color:var(--pink-none,var(--tx));font-family:var(--bf);-webkit-print-color-adjust:exact;print-color-adjust:exact;flex:none}
+.pg.white{background:#fff}
+.pg>svg.bgl{position:absolute;left:0;top:0;width:133mm;height:194mm}
+.tr{position:absolute;left:3mm;top:3mm;width:127mm;height:188mm}
+.clip{width:127mm;height:188mm;overflow:hidden;position:relative;flex:none;box-shadow:0 8px 24px rgba(0,0,0,.22)}.clip>.pg{position:absolute;left:-3mm;top:-3mm}
+.clip.bleed{overflow:visible;z-index:1}
+.pg.gray{filter:grayscale(1)}
+.flow{position:absolute;top:22mm;width:93mm;height:144mm;font-size:var(--fs);line-height:var(--lh);color:var(--tx);word-break:keep-all;overflow-wrap:anywhere}
+.pg.R .flow{left:18mm}.pg.L .flow{left:16mm}
+.flow p{margin:0;text-indent:1em;text-align:left}
+.flow p.c{text-indent:0}
+.flow .gap{height:var(--lh)}
+.flow .fig{text-align:center;height:auto;margin:0 0 var(--lh)}
+.flow .fig img{max-width:100%;max-height:68mm;border-radius:2mm;vertical-align:top}
+.rh{position:absolute;top:11mm;font-size:7.5pt;color:var(--tx);opacity:.7;font-family:var(--bf);white-space:nowrap;overflow:hidden;max-width:80mm}
+.pg.R .rh{right:16mm}.pg.L .rh{left:16mm}
+.pn{position:absolute;bottom:10mm;font-family:var(--tf);font-size:9pt;color:var(--tx)}
+.pg.R .pn{right:16mm}.pg.L .pn{left:16mm}
+.pn i{font-style:normal;display:inline-block;min-width:7mm;text-align:center;padding:.4mm 1.4mm;border-radius:3mm;background:var(--sf)}
+/* 글 제목 블록: 줄 간격 4줄 높이 */
+.wt{height:calc(var(--lh) * 4);display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:1.2mm;position:relative}
+.wt .no{font-family:var(--tf);font-size:9pt;color:var(--ac);line-height:1.2}
+.wt .tt{font-family:var(--tf);font-size:var(--tts);line-height:1.22;color:var(--tx);text-indent:0}
+.tk-underline .tt span{background:linear-gradient(180deg,transparent 58%,var(--sf) 58%);padding:0 1mm}
+.tk-box .wt{border:.5mm solid var(--ac);border-radius:2.5mm;padding:0 4mm;height:calc(var(--lh) * 3.4);margin-bottom:calc(var(--lh) * .6)}
+.tk-box .wt .no{background:var(--ac);color:#fff;padding:.4mm 2mm;border-radius:1.5mm;font-size:8pt}
+.tk-tape .wt .tt{background:var(--sf);padding:1.4mm 4mm;transform:rotate(-1.4deg)}
+.tk-tape .wt .no{padding-left:1mm}
+.tk-badge .wt{flex-direction:row;align-items:center;gap:3.5mm}
+.tk-badge .wt .no{flex:none;width:11mm;height:11mm;border-radius:50%;background:var(--ac);color:#fff;font-size:13pt;display:flex;align-items:center;justify-content:center}
+.tk-pixel .wt .tt{background:var(--sf);border:.6mm solid var(--tx);box-shadow:1.3mm 1.3mm 0 var(--ac);padding:1.2mm 3mm}
+.tk-chalk .wt .tt{color:var(--ac);border-bottom:.5mm dashed var(--tx);padding-bottom:1mm}
+.tk-speech .wt .tt{background:#fff;color:#222;border:.5mm solid var(--tx);border-radius:5mm;padding:1.6mm 4.5mm;position:relative}
+.tk-speech .wt .tail{position:absolute;left:8mm;bottom:-1.9mm;width:3.4mm;height:3.4mm;background:#fff;border-right:.5mm solid var(--tx);border-bottom:.5mm solid var(--tx);transform:rotate(45deg)}
+.tk-news .wt{border-top:1.1mm solid var(--tx);border-bottom:.3mm solid var(--tx);width:100%;height:calc(var(--lh) * 3.5);margin-bottom:calc(var(--lh) * .5)}
+.tk-news .wt .no{color:var(--tx);opacity:.75;letter-spacing:.2mm}
+.tk-polaroid .wt .tt{background:#fff;color:#222;padding:2mm 3.5mm 4mm;box-shadow:0 .6mm 1.6mm rgba(0,0,0,.22);transform:rotate(1.2deg)}
+.tk-ticket .wt .tt{background:var(--ac);color:#fff;border-radius:1.6mm;padding:1.6mm 4mm;border-left:2mm dotted var(--bgc)}
+.tk-sticky .wt .tt{background:var(--sf);padding:2.4mm 4mm;box-shadow:.6mm .8mm 0 rgba(0,0,0,.12);transform:rotate(-1.8deg)}
+.tk-stamp .wt .tt{border:.5mm dashed var(--ac);padding:1.6mm 4mm;border-radius:1mm}
+.tk-stamp .wt .no{border:.4mm solid var(--ac);border-radius:3mm;padding:.2mm 2mm}
+/* 앞쪽 특수 쪽 */
+.cen{position:absolute;left:14mm;right:14mm;text-align:center}
+.half-t{font-family:var(--tf);font-size:20pt;line-height:1.25;color:var(--tx)}
+.tp-sub{font-family:var(--bf);font-size:10pt;color:var(--tx);opacity:.8}
+.tp-t{font-family:var(--tf);font-size:24pt;line-height:1.2;color:var(--tx);margin:3mm 0 6mm}
+.tp-a{font-family:var(--tf);font-size:12pt;color:var(--ac)}
+.tp-p{font-family:var(--bf);font-size:8.5pt;color:var(--tx);opacity:.75}
+.toc{position:absolute;top:24mm;width:93mm}
+.pg.R .toc{left:18mm}.pg.L .toc{left:16mm}
+.toc h4{font-family:var(--tf);font-weight:400;font-size:18pt;margin:0 0 6mm;color:var(--tx)}
+.toc .it{display:flex;align-items:flex-end;gap:2mm;font-size:9.6pt;line-height:1.3;margin-bottom:2.25mm;color:var(--tx)}
+.toc .it .k{font-family:var(--tf);color:var(--ac);flex:none;width:6mm}
+.toc .it .d{flex:1;border-bottom:.3mm dotted var(--tx);opacity:.45;margin-bottom:1.2mm;min-width:4mm}
+.toc .it .t{max-width:66mm}
+.toc .it .n{flex:none;font-family:var(--tf)}
+.fill-h{position:absolute;top:22mm;font-family:var(--tf);font-size:15pt;color:var(--tx)}
+.pg.R .fill-h{left:18mm}.pg.L .fill-h{left:16mm}
+.fill-s{font-family:var(--bf);font-size:8.5pt;opacity:.7;margin-top:1mm}
+.fill-box{position:absolute;top:40mm;bottom:22mm;width:93mm;border:.5mm dashed var(--ac);border-radius:4mm}
+.pg.R .fill-box{left:18mm}.pg.L .fill-box{left:16mm}
+.fill-lines{position:absolute;top:44mm;width:93mm}
+.pg.R .fill-lines{left:18mm}.pg.L .fill-lines{left:16mm}
+.fill-lines i{display:block;height:10mm;border-bottom:.35mm solid var(--tx);opacity:.35}
+.colo{position:absolute;bottom:22mm;width:93mm;font-size:8pt;line-height:1.75;color:var(--tx);font-family:var(--bf)}
+.pg.R .colo{left:18mm}.pg.L .colo{left:16mm}
+.colo .ct{font-family:var(--tf);font-size:13pt;margin-bottom:1mm}
+.colo hr{border:0;border-top:.3mm solid var(--tx);opacity:.5;margin:2mm 0}
+.guides{position:absolute;inset:0;pointer-events:none}
+
+/* ───── 표지 ───── */
+.cv{position:relative;overflow:hidden;background:#fff;font-family:var(--bf);color:var(--tx)}
+.cv .pnl{position:absolute;top:0;height:194mm;overflow:hidden;background:var(--bgc)}
+.cv .pnl>svg{position:absolute;left:0;top:0}
+.cv .box{position:absolute;top:3mm;height:188mm}
+.fr{position:absolute;inset:0}
+.fr .ti{font-family:var(--tf);color:var(--tx);line-height:1.15;word-break:keep-all}
+.fr .su{font-family:var(--bf);font-size:9.5pt;color:var(--tx);opacity:.85}
+.fr .au{font-family:var(--tf);font-size:11.5pt;color:var(--tx)}
+.fr .cl{font-family:var(--tf);font-size:9pt;color:#fff;background:var(--ac);display:inline-block;padding:1mm 3mm;border-radius:3mm}
+.fr .im{object-fit:cover;display:block}
+.bk{position:absolute;left:12mm;right:12mm;top:20mm;font-size:9.5pt;line-height:1.8;color:var(--tx);white-space:pre-wrap;word-break:keep-all}
+.bk .bh{font-family:var(--tf);font-size:13pt;margin-bottom:3mm;line-height:1.3}
+.bk-in{background:rgba(255,255,255,.82);color:#222;border-radius:3mm;padding:5mm 6mm}
+.bk-foot{position:absolute;left:12mm;bottom:14mm;font-family:var(--tf);font-size:9pt;color:var(--tx)}
+.wg{position:absolute;left:7mm;right:7mm;top:18mm;font-size:8.6pt;line-height:1.75;white-space:pre-wrap;word-break:keep-all;color:var(--tx)}
+.wg .wh{font-family:var(--tf);font-size:12pt;margin-bottom:2mm;line-height:1.3}
+.wg img{width:34mm;height:34mm;object-fit:cover;border-radius:50%;display:block;margin:0 0 4mm;border:1mm solid #fff}
+.sp{position:absolute;left:50%;top:50%;white-space:nowrap;font-family:var(--tf);color:var(--tx);transform-origin:center}
+</style>
+</head>
+<body>
+<header class="top">
+  <svg class="pencil" viewBox="0 0 420 120" aria-hidden="true"><g transform="rotate(-8 210 60)"><rect x="40" y="38" width="290" height="44" rx="4" fill="#1f2a44"/><rect x="40" y="38" width="290" height="14" fill="#2c3a5e"/><rect x="40" y="70" width="290" height="12" fill="#151d31"/><rect x="330" y="38" width="34" height="44" fill="#d9d9d9"/><rect x="330" y="38" width="34" height="8" fill="#f0f0f0"/><rect x="364" y="38" width="34" height="44" rx="10" fill="#ff7a8a"/><path d="M40 38 L2 60 L40 82 Z" fill="#f3d7a6"/><path d="M14 53 L2 60 L14 67 Z" fill="#1f2a44"/></g></svg>
+  <h1>효덕초 6학년 4반 작가 프로젝트</h1>
+  <p>나의 글 15편을 쓰면 부크크 46판(127×188mm)에 맞춘 내지 PDF와 표지 PDF가 만들어집니다.</p>
+  <nav class="steps" id="steps" aria-label="단계">
+    <a href="#step-1"><b>1</b>책 정보</a><a href="#step-2"><b>2</b>나의 글</a><a href="#step-3"><b>3</b>내지 디자인</a><a href="#step-4"><b>4</b>내지 받기</a><a href="#step-5"><b>5</b>표지</a><a href="#step-6"><b>6</b>부크크 등록</a>
+  </nav>
+</header>
+
+<main class="wrap">
+<div>
+<!-- 1 -->
+<section class="panel" id="p1">
+  <h2>1. 책 정보와 판형</h2>
+  <p class="lead">책 제목과 지은이를 적어요. 판형은 부크크 46판으로 정해져 있어요.</p>
+  <div class="fixed"><span class="sz">46판</span><div><b>127 × 188 mm</b> · 부크크 판형 중 시·에세이용 일반도서 크기<br><span class="note">내지 PDF는 사방 3mm 재단 여백을 더한 <b>133 × 194 mm</b>로 만들어집니다. 글은 재단선에서 15mm 넘게 안쪽에 있어서 잘리지 않아요.</span></div></div>
+  <div class="card">
+    <label class="f"><span>책 제목</span><input type="text" id="title" maxlength="40"></label>
+    <label class="f"><span>부제 (선택)</span><input type="text" id="sub" maxlength="50"></label>
+    <div class="row">
+      <label class="f"><span>지은이 (내 이름)</span><input type="text" id="author" maxlength="20"></label>
+      <label class="f"><span>학년·반</span><input type="text" id="cls" maxlength="20"></label>
+    </div>
+    <div class="row">
+      <label class="f"><span>학교 이름 (선택)</span><input type="text" id="school" maxlength="30"></label>
+      <label class="f"><span>발행일 (판권에 들어감)</span><input type="date" id="date"></label>
+    </div>
+    <details><summary>자세히 (글자 크기, 판권)</summary>
+      <div class="row" style="margin-top:8px">
+        <label class="f"><span>본문 글자 크기</span><select id="fs"><option value="10">10pt</option><option value="10.5">10.5pt</option><option value="11">11pt (권장)</option><option value="11.5">11.5pt</option><option value="12">12pt</option></select></label>
+        <label class="f"><span>본문 글꼴</span><select id="bodyFont"><option value="">디자인 기본</option><option value="Gowun Dodum">고운돋움</option><option value="Nanum Gothic">나눔고딕</option><option value="Gowun Batang">고운바탕</option><option value="Nanum Myeongjo">나눔명조</option><option value="IBM Plex Sans KR">IBM Plex Sans KR</option></select></label>
+      </div>
+      <div class="row">
+        <label class="f"><span>지도 교사 (선택)</span><input type="text" id="teacher" maxlength="20"></label>
+        <label class="f"><span>펴낸곳</span><input type="text" id="publisher" maxlength="30"></label>
+      </div>
+      <label class="f"><span>ISBN (부크크에서 받은 뒤 넣고 PDF를 다시 만들어요. 소장용이면 비워 둬요)</span><input type="text" id="isbn" maxlength="30"></label>
+      <p class="note">반표제지 → 속표지 → (작가의 말) → 차례 → 나의 글 15편 → 판권 순서로 자동 배치됩니다.</p>
+    </details>
+  </div>
+  <div class="btns"><a class="btn" href="#step-2">다음: 나의 글 쓰기</a></div>
+</section>
+
+<!-- 2 -->
+<section class="panel" id="p2">
+  <h2>2. 나의 글</h2>
+  <p class="lead">주제 15개마다 제목과 나의 글을 써요. 제목은 내 마음대로 바꿔도 돼요. 마음에 안 드는 주제는 '주제 바꾸기'를 눌러요.</p>
+  <div class="prog" aria-hidden="true"><i id="wprog"></i></div>
+  <p class="note" id="wcount" style="margin-top:-12px"></p>
+  <div class="card">
+    <h3>작가의 말 (선택)</h3>
+    <label class="f"><span>차례 앞에 들어가요. 이 책을 왜 썼는지, 읽는 사람에게 하고 싶은 말을 써요.</span><textarea id="preface" rows="4"></textarea></label>
+  </div>
+  <div id="wlist"></div>
+  <div class="card">
+    <h3>쪽 배치</h3>
+    <label class="check"><input type="checkbox" id="rightStart"> 모든 글을 오른쪽(홀수) 쪽에서 시작하기</label>
+    <label class="f" style="margin-top:6px"><span>부크크는 50쪽 이상이어야 해요. 모자라는 쪽은</span>
+      <select id="filler"><option value="activity">활동 쪽으로 채우기 (낙서장·친구의 한마디·작가 사인)</option><option value="blank">무늬만 있는 빈 쪽으로 채우기</option></select></label>
+  </div>
+  <div class="btns"><a class="btn alt" href="#step-1">이전</a><a class="btn" href="#step-3">다음: 내지 디자인</a></div>
+</section>
+
+<!-- 3 -->
+<section class="panel" id="p3">
+  <h2>3. 내지 디자인</h2>
+  <p class="lead">책 속 종이 무늬를 30가지 중에서 골라요. 고르면 오른쪽 미리보기가 바로 바뀌어요.</p>
+  <div class="card"><div class="grid" id="themeGrid"></div></div>
+  <div class="card">
+    <label class="check"><input type="checkbox" id="gray"> 흑백 인쇄로 보기 (부크크에서 내지를 '흑백'으로 고를 때)</label>
+    <p class="note">부크크에서 내지를 흑백으로 고르면 색이 회색으로 인쇄돼요. 컬러 무늬를 살리려면 부크크에서 내지를 '컬러'로 고르세요(값이 더 비싸요). 흑백으로 낼 때는 이 칸을 켜고 PDF를 만들면 회색 농도를 미리 맞출 수 있어요.</p>
+  </div>
+  <div class="btns"><a class="btn alt" href="#step-2">이전</a><a class="btn" href="#step-4">다음: 내지 받기</a></div>
+</section>
+
+<!-- 4 -->
+<section class="panel" id="p4">
+  <h2>4. 내지 받기</h2>
+  <p class="lead">쪽수를 확인하고 내지 PDF를 받아요. 이 PDF를 부크크 '원고 등록'에 올려요.</p>
+  <div class="stats" id="stats"></div>
+  <div class="card">
+    <h3>내지 PDF</h3>
+    <label class="f"><span>화질</span><select id="dpi"><option value="300">인쇄용 300dpi (권장, 파일이 커요)</option><option value="200">가벼운 200dpi</option></select></label>
+    <div class="btns">
+      <button class="btn pen" id="mkPdf">내지 PDF 만들기</button>
+      <button class="btn alt" id="printPdf" hidden>인쇄 창으로 저장 (글자가 더 선명)</button>
+    </div>
+    <div class="prog" id="pdfProgWrap" hidden><i id="pdfProg"></i></div>
+    <p class="note" id="pdfMsg">쪽마다 그림으로 바꿔 PDF로 묶어서 시간이 조금 걸려요(50쪽에 1~2분). 부크크는 원고를 100MB까지 받아요.</p>
+  </div>
+  <div class="card">
+    <h3>작업 저장</h3>
+    <p class="note">쓰는 동안 이 브라우저에 자동으로 저장돼요. 다른 컴퓨터에서 이어 쓰려면 작업 파일(.json)을 받아 두세요.</p>
+    <div class="btns"><button class="btn alt" id="saveJson">작업 파일 받기</button><label class="btn alt" for="loadJson">작업 파일 불러오기</label><input type="file" id="loadJson" accept=".json,application/json" hidden></div>
+  </div>
+  <div class="btns"><a class="btn alt" href="#step-3">이전</a><a class="btn" href="#step-5">다음: 표지</a></div>
+</section>
+
+<!-- 5 -->
+<section class="panel" id="p5">
+  <h2>5. 표지</h2>
+  <p class="lead">내지와 어울리는 표지 30가지 중에서 골라요. 같은 이름끼리 짝이에요.</p>
+  <div class="card"><div class="btns" style="margin:0 0 12px"><button class="btn alt" id="coverFollow">내지와 같은 짝으로 맞추기</button></div><div class="grid" id="coverGrid"></div></div>
+  <div class="card">
+    <h3>표지 규격</h3>
+    <label class="check"><input type="checkbox" id="wing"> 날개 있는 표지 (부크크 Step 1에서 '날개'를 고른 경우)</label>
+    <div class="row" style="margin-top:8px">
+      <label class="f"><span>책등 두께 (mm)</span><input type="number" id="spine" step="0.01" min="1" max="60"></label>
+      <label class="f"><span>날개 폭 (mm)</span><input type="number" id="wingW" step="1" min="50" max="120"></label>
+    </div>
+    <p class="note" id="spineNote"></p>
+    <dl class="kv" id="coverSize"></dl>
+  </div>
+  <div class="card">
+    <h3>표지 글과 그림</h3>
+    <label class="f"><span>뒤표지 소개 글</span><textarea id="back" rows="4"></textarea></label>
+    <label class="f"><span>앞날개 작가 소개 (날개 있을 때)</span><textarea id="wingFront" rows="3"></textarea></label>
+    <label class="f"><span>뒷날개 글 (날개 있을 때)</span><textarea id="wingBack" rows="2"></textarea></label>
+    <div class="row">
+      <div class="f"><span class="note">앞표지 그림 (선택 · 내가 그린 그림)</span><div class="wimg"><img id="cimgPrev" alt="" hidden><label class="btn alt sm" for="cimg">그림 올리기</label><button class="btn alt sm" id="cimgDel" hidden>지우기</button></div><input type="file" id="cimg" accept="image/*" hidden></div>
+      <div class="f"><span class="note">앞날개 작가 그림·사진 (선택)</span><div class="wimg"><img id="photoPrev" alt="" hidden><label class="btn alt sm" for="photo">올리기</label><button class="btn alt sm" id="photoDel" hidden>지우기</button></div><input type="file" id="photo" accept="image/*" hidden></div>
+    </div>
+  </div>
+  <div class="card">
+    <h3>표지 받기</h3>
+    <div class="btns"><button class="btn pen" id="mkCover">표지 PDF 만들기</button><button class="btn alt" id="mkFront">앞표지 JPG 받기</button></div>
+    <p class="note" id="coverMsg">펼친 표지(뒤표지·책등·앞표지, 날개 포함) 한 장이 사방 3mm 재단 여백을 넣어 만들어져요.</p>
+  </div>
+  <div class="btns"><a class="btn alt" href="#step-4">이전</a><a class="btn" href="#step-6">다음: 부크크 등록</a></div>
+</section>
+
+<!-- 6 -->
+<section class="panel" id="p6">
+  <h2>6. 부크크 등록</h2>
+  <p class="lead">부크크 책만들기는 도서 형태 → 원고 등록 → 표지 디자인 → 가격 정책 → 최종 확인, 다섯 단계예요. 회원 가입과 등록은 선생님이나 보호자와 함께 해요.</p>
+  <div class="card">
+    <ol class="guide" id="bookkGuide"></ol>
+    <div class="btns"><a class="btn pen" href="https://bookk.co.kr/author/make/paperBook" target="_blank" rel="noopener">부크크 책만들기 열기</a></div>
+    <p class="note">주소: bookk.co.kr/author/make/paperBook · 원고가 100MB를 넘으면 빈 파일을 먼저 올리고 info@bookk.co.kr 로 보내요.</p>
+  </div>
+  <div class="btns"><a class="btn alt" href="#step-5">이전</a></div>
+</section>
+</div>
+
+<!-- 미리보기 -->
+<aside class="view" aria-label="미리보기">
+  <div class="vbar">
+    <button class="tab" id="vIn" aria-pressed="true">내지</button>
+    <button class="tab" id="vCv" aria-pressed="false">표지</button>
+    <label class="check" style="margin-left:auto"><input type="checkbox" id="showGuide"> 안내선</label>
+  </div>
+  <div class="stage" id="stage"><div class="scaler" id="scaler"></div></div>
+  <div class="vnav" id="vnav">
+    <button class="btn alt" id="first" aria-label="처음">«</button>
+    <button class="btn alt" id="prev" aria-label="앞 펼침">‹</button>
+    <span class="pinfo" id="pinfo"></span>
+    <button class="btn alt" id="next" aria-label="다음 펼침">›</button>
+    <button class="btn alt" id="last" aria-label="끝">»</button>
+  </div>
+  <p class="note" id="vnote" style="text-align:center">왼쪽은 짝수 쪽, 오른쪽은 홀수 쪽이에요.</p>
+</aside>
+</main>
+
+<div id="measure"></div>
+<div id="work"></div>
+<div id="printRoot"></div>
+<div class="toast" id="toast" role="status"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+{
+/* ─────────── 기본 값 ─────────── */
+const PW=127, PH=188, MM=96/25.4, BLEED=3;
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const px=mm=>+(mm*MM).toFixed(2);
+
+const TOPICS=[
+ {t:'하루 동안 투명인간이 된다면',h:'제일 먼저 어디로 갈까? 들키면 어떻게 하지? 하루가 끝날 때 기분은?'},
+ {t:'우리 집 냉장고가 말을 한다면',h:'냉장고가 보는 우리 가족의 하루. 밤 12시에 문을 여는 사람은 누구?'},
+ {t:'6학년 4반 사용 설명서',h:'처음 온 사람을 위한 우리 반 안내서. 주의 사항, 꿀팁, 고장 났을 때 대처법'},
+ {t:'내 침대가 나에게 쓰는 편지',h:'아침마다 나를 붙잡는 침대의 속마음. 이불은 무슨 말을 할까?'},
+ {t:'급식 메뉴 월드컵',h:'16강부터 결승까지! 내가 뽑은 우승 메뉴와 탈락 메뉴의 사연'},
+ {t:'쓸데없지만 꼭 필요한 발명품',h:'숙제 대신 해 주는 연필? 잔소리 자동 응답기? 이름, 사용법, 부작용까지'},
+ {t:'10년 뒤의 나에게 보내는 자랑 편지',h:'스물두 살의 나에게 지금의 내가 자랑하고 싶은 것과 부탁하고 싶은 것'},
+ {t:'우리 가족 캐릭터 소개서',h:'가족을 게임 캐릭터로 바꾸면? 필살기, 약점, 좋아하는 아이템'},
+ {t:'웃음 참기에 실패한 날',h:'절대 웃으면 안 되는 순간에 터져 버린 이야기. 그때 무슨 일이?'},
+ {t:'내 필통과의 인터뷰',h:'필통에게 묻고 필통이 답해요. 가장 오래된 연필의 사연은?'},
+ {t:'하루만 어른이 된다면',h:'어른이 되면 꼭 해 보고 싶은 일, 그런데 해 보니 의외로 힘든 일'},
+ {t:'졸업 전 버킷리스트',h:'초등학교를 떠나기 전에 꼭 해 보고 싶은 일 다섯 가지와 그 이유'},
+ {t:'내가 교장 선생님이 된다면',h:'새로 만들 학교 규칙, 없앨 규칙, 첫 조회 시간 연설'},
+ {t:'속보! 숙제가 사라진 세상',h:'뉴스 기자가 되어 전해요. 사람들의 반응과 뜻밖의 문제'},
+ {t:'6년 동안의 나에게 주는 상장',h:'상 이름, 받는 까닭, 상품까지. 나만 아는 노력을 칭찬해 주기'}
+];
+const EXTRA=[
+ {t:'교실 의자의 하소연',h:'매일 나를 받쳐 주는 의자가 하고 싶은 말. 제일 무거운 날은?'},
+ {t:'우리 반 기분 날씨 예보',h:'오늘 우리 반의 기분을 날씨로 알려 주세요. 시험 날은 태풍 주의보?'},
+ {t:'우리 집 잔소리 번역기',h:'"방 좀 치워라"는 사실 무슨 뜻일까? 잔소리를 속마음으로 번역해요'},
+ {t:'세상에서 가장 쓸데없는 대회 우승 소감',h:'어떤 대회였는지, 어떻게 연습했는지, 감동의 수상 소감'},
+ {t:'내가 유튜버라면 첫 영상 대본',h:'채널 이름, 첫인사, 무엇을 보여 줄지, 구독 부탁 멘트까지'},
+ {t:'시간이 멈춘 5분',h:'세상이 멈춘 동안 나만 움직일 수 있다면 무엇을 할까?'},
+ {t:'공룡이 우리 반에 전학 온 날',h:'자기소개, 급식 시간, 체육 시간에 벌어진 일'},
+ {t:'나를 동물로 소개합니다',h:'나와 닮은 동물과 그 까닭. 서식지, 먹이, 특이한 습성'},
+ {t:'스마트폰이 파업한 날',h:'스마트폰이 요구 사항을 내걸었다! 협상은 어떻게 끝났을까?'},
+ {t:'수학 시간 숫자들의 반란',h:'숫자들이 더 이상 계산되기 싫다고 한다면?'},
+ {t:'우리 동네 숨은 맛집 리뷰',h:'별점, 추천 메뉴, 사장님 특징까지 진짜 리뷰처럼'},
+ {t:'외계인에게 지구 소개하기',h:'처음 온 외계인에게 꼭 알려 줄 지구 생활 규칙과 추천 장소'},
+ {t:'운동회 날 실황 중계',h:'아나운서가 되어 운동회를 중계해요. 역전의 순간은?'},
+ {t:'내 머리카락의 오늘 일기',h:'아침의 까치집부터 체육 시간 땀범벅까지, 머리카락의 하루'},
+ {t:'내 그림자가 사라졌다',h:'그림자가 가출했다. 어디로 갔고, 어떻게 데려올까?'}
+];
+
+/* ─────────── 디자인 30종 ─────────── */
+// p: bg 바탕, tx 글자, ac 강조, b2 보조, sf 연한 색
+const TH=[
+ ['공책 한 바닥','줄 공책에 연필로 쓴 느낌','lines','underline','label','Gaegu','Gowun Dodum',{bg:'#fffdf6',tx:'#2b2b2b',ac:'#3d72c9',b2:'#ef7b72',sf:'#d6e4f8'}],
+ ['모눈 노트','실험 노트 같은 깔끔한 칸','grid','box','center','Do Hyeon','Nanum Gothic',{bg:'#ffffff',tx:'#222222',ac:'#2f9e77',b2:'#ffc928',sf:'#d5efe5'}],
+ ['마스킹테이프','다이어리 꾸미기 감성','tape','tape','frame','Gamja Flower','Gowun Dodum',{bg:'#fffaf3',tx:'#3a3330',ac:'#e3936a',b2:'#7fbcbc',sf:'#f6dfcd'}],
+ ['별빛 밤하늘','깜깜한 밤, 반짝이는 별','stars','badge','poster','Yeon Sung','Gowun Batang',{bg:'#1d2350',tx:'#f3f1ff',ac:'#ffd166',b2:'#8fa8ff',sf:'#38418a'}],
+ ['픽셀 게임','레벨 업! 8비트 게임 화면','pixel','pixel','poster','Black Han Sans','Nanum Gothic',{bg:'#f4f1ff',tx:'#1b1b2f',ac:'#7b5cff',b2:'#ff5ca8',sf:'#e1d9ff'}],
+ ['교실 칠판','분필로 쓴 우리 반 칠판','chalk','chalk','center','Nanum Pen Script','Gowun Dodum',{bg:'#264a3f',tx:'#f4f1e8',ac:'#ffe38a',b2:'#ffb3c1',sf:'#33604f'}],
+ ['원고지','또박또박 원고지 한 칸','genkoji','underline','label','Song Myung','Nanum Myeongjo',{bg:'#fffefa',tx:'#2a2a2a',ac:'#d0564f',b2:'#6f9a78',sf:'#f6d9d5'}],
+ ['폴라로이드','사진첩에 붙인 추억','polaroid','polaroid','frame','Gaegu','Gowun Dodum',{bg:'#f6f2ea',tx:'#33302c',ac:'#c97b5a',b2:'#6c8fb3',sf:'#e9dfcf'}],
+ ['만화 말풍선','빵! 터지는 만화 한 컷','comic','speech','poster','Jua','Nanum Gothic',{bg:'#ffffff',tx:'#151515',ac:'#ff4d4d',b2:'#ffcc00',sf:'#ffe3e3'}],
+ ['신문 1면','우리 반 특별 호외','news','news','news','Black Han Sans','Nanum Myeongjo',{bg:'#fbfaf6',tx:'#1a1a1a',ac:'#c0392b',b2:'#6b6b6b',sf:'#ebe9e2'}],
+ ['초록 잎사귀','창가 화분 옆에서','leaves','badge','center','Gowun Batang','Gowun Batang',{bg:'#f8fbf3',tx:'#26332a',ac:'#4f8a4b',b2:'#e3a93c',sf:'#e0eed6'}],
+ ['우주 탐험대','행성 사이를 여행하는 글','space','badge','poster','Jua','Gowun Dodum',{bg:'#f1f3ff',tx:'#1f2340',ac:'#5566f2',b2:'#ff8a5b',sf:'#dde2ff'}],
+ ['영화 티켓','오늘의 상영작은 내 이야기','ticket','ticket','label','Do Hyeon','IBM Plex Sans KR',{bg:'#fff8ec',tx:'#2d2a26',ac:'#e4572e',b2:'#29335c',sf:'#fbe3c4'}],
+ ['포스트잇','메모를 붙여 둔 책상','sticky','sticky','stack','Hi Melody','Gowun Dodum',{bg:'#fffef8',tx:'#333333',ac:'#f2b705',b2:'#5fb8ee',sf:'#fff0a8'}],
+ ['파스텔 몽글','말랑말랑 솜사탕 색','blobs','underline','center','Sunflower','Gowun Dodum',{bg:'#fffafd',tx:'#3b3447',ac:'#a77bea',b2:'#5fcab4',sf:'#efe2ff'}],
+ ['색종이 축제','흩날리는 색종이 조각','confetti','badge','poster','Jua','Nanum Gothic',{bg:'#ffffff',tx:'#2b2b2b',ac:'#ff6b6b',b2:'#3d9df0',sf:'#ffe9e9'}],
+ ['우표 편지','멀리 보내는 편지 한 통','stamp','stamp','frame','Yeon Sung','Gowun Batang',{bg:'#fdf8f0',tx:'#3d2f24',ac:'#c85a3a',b2:'#3b6e8f',sf:'#f2e3cc'}],
+ ['체크 피크닉','돗자리 펴고 소풍 가요','gingham','tape','label','Gaegu','Gowun Dodum',{bg:'#fffdf8',tx:'#333333',ac:'#e0546d',b2:'#7cb974',sf:'#fbdde3'}],
+ ['뭉게구름','맑은 날 하늘 산책','clouds','speech','center','Jua','Gowun Dodum',{bg:'#f3f9ff',tx:'#24364d',ac:'#4b9ee0',b2:'#ffc94a',sf:'#d8eafb'}],
+ ['비눗방울','동그랗게 떠오르는 생각','bubbles','badge','poster','Dongle','Gowun Dodum',{bg:'#f5fcff',tx:'#213547',ac:'#28b3ae',b2:'#9b7bf2',sf:'#d9f3f2'}],
+ ['스프링 다이어리','오늘의 일기장','diary','underline','stack','Nanum Pen Script','Gowun Dodum',{bg:'#fffefb',tx:'#2f2f2f',ac:'#6c5fe6',b2:'#f2a54f',sf:'#e7e3ff'}],
+ ['보물 지도','X 표시를 찾아 떠나요','map','stamp','frame','Gugi','Gowun Batang',{bg:'#faf1dc',tx:'#3e2f1c',ac:'#b5582b',b2:'#2e7d6b',sf:'#efdcb3'}],
+ ['음표 노트','노래하듯 쓰는 글','music','underline','center','Hi Melody','Nanum Gothic',{bg:'#fffdfb',tx:'#2b2233',ac:'#d9467a',b2:'#3d5af1',sf:'#fadde8'}],
+ ['운동장','달려라, 6학년!','sport','box','poster','Black Han Sans','Nanum Gothic',{bg:'#f3faf1',tx:'#1d2b1f',ac:'#2b9348',b2:'#f07b00',sf:'#d7f0d1'}],
+ ['레시피 카드','오늘의 특별 요리법','recipe','ticket','label','Gamja Flower','Gowun Dodum',{bg:'#fffaf2',tx:'#3b2a20',ac:'#e06a4c',b2:'#279488',sf:'#fcdfca'}],
+ ['필름 스트립','한 장면씩 넘기는 영화','film','box','frame','Do Hyeon','IBM Plex Sans KR',{bg:'#fafafa',tx:'#1e1e1e',ac:'#2a2a2a',b2:'#f2c14e',sf:'#e9e9e9'}],
+ ['오락실','동전 넣고 시작하기','arcade','pixel','poster','Black Han Sans','Nanum Gothic',{bg:'#fffafc',tx:'#1a1033',ac:'#f0306f',b2:'#00a8cc',sf:'#ffe0eb'}],
+ ['형광펜 공부 노트','중요한 건 형광펜으로','cornell','underline','label','Gaegu','Nanum Gothic',{bg:'#ffffff',tx:'#222222',ac:'#ff7fa0',b2:'#a6dd3c',sf:'#fff27a'}],
+ ['도서관 대출 카드','빌려 가고 싶은 책','library','stamp','label','Song Myung','Nanum Myeongjo',{bg:'#f6efe1',tx:'#2d2a26',ac:'#a23b2a',b2:'#2f4858',sf:'#e8d9be'}],
+ ['무지개 크레파스','크레파스로 그은 선','crayon','badge','center','Gamja Flower','Gowun Dodum',{bg:'#fffefa',tx:'#2d2d2d',ac:'#f04e55',b2:'#1982c4',sf:'#ffeedd'}]
+].map((a,i)=>({id:i,name:a[0],desc:a[1],bg:a[2],tk:a[3],cl:a[4],tf:a[5],bf:a[6],p:a[7]}));
+
+/* ─────────── 상태 ─────────── */
+const today=new Date(); const iso=d=>d.toISOString().slice(0,10);
+const DEF=()=>({title:'웃음 한 스푼, 6학년',sub:'열세 살 작가의 유쾌한 이야기 15편',author:'',cls:'6학년 4반',school:'',date:iso(new Date(today.getFullYear(),today.getMonth()+1,1)),
+ fs:'11',bodyFont:'',teacher:'',publisher:'부크크',isbn:'',preface:'',
+ w:TOPICS.map(t=>({topic:t.t,hint:t.h,title:t.t,text:'',img:null})),pool:0,
+ rightStart:false,filler:'activity',theme:0,gray:false,
+ cover:{theme:null,wing:false,spine:null,wingW:100,back:'',wingFront:'',wingBack:'6학년 4반 작가 프로젝트로 우리 반 친구들이 저마다 한 권씩 쓴 책입니다.',img:null,photo:null}});
+let S=DEF();
+const KEY='g6-4-author-project';
+try{const raw=localStorage.getItem(KEY); if(raw){const o=JSON.parse(raw); S=Object.assign(DEF(),o); S.cover=Object.assign(DEF().cover,o.cover||{}); if(!Array.isArray(S.w)||S.w.length!==15) S.w=DEF().w;}}catch(e){}
+let saveT=0;
+function persist(){clearTimeout(saveT);saveT=setTimeout(()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){try{const c=JSON.parse(JSON.stringify(S));c.w.forEach(w=>w.img=null);c.cover.img=null;c.cover.photo=null;localStorage.setItem(KEY,JSON.stringify(c));toast('그림은 브라우저에 다 저장되지 않아요. 작업 파일을 받아 두세요.')}catch(e2){}}},500)}
+
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),3200)}
+
+/* ─────────── 무늬 그리기(SVG, mm 단위) ─────────── */
+function rng(seed){let a=seed>>>0;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const op=(c,o)=>`fill="${c}" fill-opacity="${o}"`;
+// 글 영역을 피한 여백에 점을 뿌리는 도우미
+function scatter(r,n,w,h,avoid,fn){let out='',k=0,g=0;while(k<n&&g<n*40){g++;const x=r()*w,y=r()*h;if(avoid&&x>avoid[0]&&x<avoid[2]&&y>avoid[1]&&y<avoid[3])continue;out+=fn(x,y,k);k++}return out}
+function star(x,y,s){const pts=[];for(let i=0;i<10;i++){const a=Math.PI/5*i-Math.PI/2,rr=i%2?s*.42:s;pts.push((x+Math.cos(a)*rr).toFixed(2)+','+(y+Math.sin(a)*rr).toFixed(2))}return pts.join(' ')}
+function cloud(x,y,s,c,o){return `<g ${op(c,o)}><circle cx="${x}" cy="${y}" r="${s}"/><circle cx="${x+s*1.1}" cy="${y-s*.5}" r="${s*1.25}"/><circle cx="${x+s*2.3}" cy="${y}" r="${s*.95}"/><rect x="${x}" y="${y}" width="${s*2.3}" height="${s*.95}"/></g>`}
+function leaf(x,y,s,rot,c,o){return `<path transform="translate(${x} ${y}) rotate(${rot})" d="M0 0 C ${s*.5} ${-s*.6}, ${s*1.5} ${-s*.6}, ${s*2} 0 C ${s*1.5} ${s*.6}, ${s*.5} ${s*.6}, 0 0 Z" ${op(c,o)}/><path transform="translate(${x} ${y}) rotate(${rot})" d="M0 0 L${s*1.9} 0" stroke="${c}" stroke-opacity="${o}" stroke-width=".25"/>`}
+
+/* bgSVG: w,h(mm), 디자인, 모드(body|title|cover|wing|spine), 쪽 방향(L|R), 줄간격 lh(mm), 씨앗 */
+function bgSVG(T,w,h,mode,side,lh,seed){
+ const p=T.p, r=rng(seed||7), full=mode!=='body', R=side!=='L';
+ const inX=R?0:w, outX=R?w:0; // 안쪽(제본), 바깥쪽 x
+ const tA=[R?17:15,20,R?w-15:w-17,h-20]; // 글 영역(피하기)
+ const avoid=mode==='body'||mode==='title'?tA:(mode==='cover'?[12,40,w-12,h-40]:null);
+ let s=`<rect x="-3" y="-3" width="${w+6}" height="${h+6}" fill="${p.bg}"/>`;
+ const L=lh||7, top=22;
+ const lines=(c,o,from,to)=>{let t='';for(let y=(from??top)+L*.86;y<(to??h-20);y+=L)t+=`<line x1="${R?12:6}" x2="${R?w-6:w-12}" y1="${y.toFixed(2)}" y2="${y.toFixed(2)}" stroke="${c}" stroke-opacity="${o}" stroke-width=".25"/>`;return t};
+ switch(T.bg){
+ case 'lines':
+  s+=full&&mode==='cover'?(()=>{let t='';for(let y=8;y<h;y+=8)t+=`<line x1="0" x2="${w}" y1="${y}" y2="${y}" stroke="${p.ac}" stroke-opacity=".28" stroke-width=".3"/>`;return t})():lines(p.ac,.3);
+  s+=`<line x1="${R?13:w-13}" x2="${R?13:w-13}" y1="0" y2="${h}" stroke="${p.b2}" stroke-opacity=".6" stroke-width=".35"/>`;
+  if(full)for(let i=0;i<3;i++)s+=`<circle cx="${R?6:w-6}" cy="${h*(.25+i*.25)}" r="2.2" fill="#fff" stroke="${p.tx}" stroke-opacity=".15" stroke-width=".3"/>`;
+  break;
+ case 'grid':{let t='';const g=5;for(let x=0;x<=w;x+=g)t+=`<line x1="${x}" x2="${x}" y1="0" y2="${h}"/>`;for(let y=0;y<=h;y+=g)t+=`<line x1="0" x2="${w}" y1="${y}" y2="${y}"/>`;s+=`<g stroke="${p.ac}" stroke-opacity="${full?.25:.16}" stroke-width=".2">${t}</g>`;
+  if(full)s+=`<rect x="${w-30}" y="${h-26}" width="20" height="10" fill="${p.b2}" fill-opacity=".8" transform="rotate(-6 ${w-20} ${h-21})"/>`;break}
+ case 'tape':{const tp=(x,y,rot,c)=>`<rect x="${x-13}" y="${y-3.2}" width="26" height="6.4" ${op(c,.55)} transform="rotate(${rot} ${x} ${y})"/><path d="M${x-13} ${y-3.2} l1 1 -1 1 1 1 -1 1 1 1 -1 1" fill="none" stroke="${p.bg}" stroke-width=".4" transform="rotate(${rot} ${x} ${y})"/>`;
+  s+=tp(R?w-14:14,10,R?32:-32,p.ac)+tp(R?16:w-16,h-9,R?-20:20,p.b2);
+  if(full)s+=tp(w*.3,h*.18,-8,p.b2)+tp(w*.72,h*.82,12,p.ac)+`<g fill="${p.sf}">${scatter(r,14,w,h,avoid,(x,y)=>`<circle cx="${x}" cy="${y}" r="${1+r()*1.8}"/>`)}</g>`;break}
+ case 'stars':
+  s+=`<g fill="${p.ac}">${scatter(r,full?60:26,w,h,avoid,(x,y)=>r()<.25?`<polygon points="${star(x,y,1+r()*1.6)}"/>`:`<circle cx="${x}" cy="${y}" r="${.2+r()*.45}" fill="#fff" fill-opacity="${.5+r()*.5}"/>`)}</g>`;
+  if(full)s+=`<circle cx="${w*.78}" cy="${h*.15}" r="11" fill="${p.ac}"/><circle cx="${w*.78+5}" cy="${h*.15-3}" r="10" fill="${p.bg}"/>`;
+  else s+=`<path d="M0 ${h-6} Q ${w/2} ${h-14} ${w} ${h-6} L${w} ${h} L0 ${h}Z" fill="${p.sf}" fill-opacity=".7"/>`;break;
+ case 'pixel':{const q=3;let t='';const n=Math.ceil(w/q),m=Math.ceil(h/q);for(let i=0;i<n;i++){t+=`<rect x="${i*q}" y="0" width="${q}" height="${q}" fill="${i%2?p.ac:p.b2}" fill-opacity="${i%3?1:.5}"/><rect x="${i*q}" y="${h-q}" width="${q}" height="${q}" fill="${i%2?p.b2:p.ac}" fill-opacity="${i%3?1:.5}"/>`}
+  for(let j=1;j<m-1;j++)t+=`<rect x="${outX-(R?q:0)}" y="${j*q}" width="${q}" height="${q}" fill="${j%2?p.ac:p.sf}"/>`;s+=`<rect x="-3" y="-3" width="${w+6}" height="3" fill="${p.ac}"/><rect x="-3" y="${h}" width="${w+6}" height="3" fill="${p.ac}"/><rect x="${R?w:-3}" y="-3" width="3" height="${h+6}" fill="${p.ac}"/>`+t;
+  const heart=(x,y,c)=>{const H=[[1,0],[3,0],[0,1],[1,1],[2,1],[3,1],[4,1],[0,2],[1,2],[2,2],[3,2],[4,2],[1,3],[2,3],[3,3],[2,4]];return H.map(([a,b])=>`<rect x="${x+a*1.4}" y="${y+b*1.4}" width="1.4" height="1.4" fill="${c}"/>`).join('')};
+  s+=heart(R?w-20:12,8,p.b2);if(full)s+=heart(12,h-28,p.ac)+heart(w-30,h*.4,p.b2);break}
+ case 'chalk':
+  s+=`<rect x="1.5" y="1.5" width="${w-3}" height="${h-3}" fill="none" stroke="${p.tx}" stroke-opacity=".18" stroke-width=".35" stroke-dasharray="3 1.5"/>`;
+  if(full)s+=`<rect x="0" y="0" width="${w}" height="${h}" fill="none" stroke="#8a5a32" stroke-width="7"/><rect x="${w*.1}" y="${h-11}" width="${w*.8}" height="4" fill="#9a6a3e"/><rect x="${w*.3}" y="${h-13}" width="9" height="2.2" rx="1" fill="#fff"/><rect x="${w*.45}" y="${h-13}" width="7" height="2.2" rx="1" fill="${p.b2}"/>`;
+  s+=`<g fill="#fff">${scatter(r,full?16:8,w,h,avoid,(x,y)=>`<ellipse cx="${x}" cy="${y}" rx="${3+r()*6}" ry="${1+r()*2}" fill-opacity="${.03+r()*.05}"/>`)}</g>`;break;
+ case 'genkoji':{const fx=R?12:9,fy=13,fw=w-21,fh=h-26;s+=`<rect x="${fx}" y="${fy}" width="${fw}" height="${fh}" fill="none" stroke="${p.ac}" stroke-opacity=".55" stroke-width=".5"/><rect x="${fx+1}" y="${fy+1}" width="${fw-2}" height="${fh-2}" fill="none" stroke="${p.ac}" stroke-opacity=".4" stroke-width=".2"/>`;
+  if(full){let t='';const c=7;for(let x=fx+4;x<fx+fw-c;x+=c+1.6)for(let y=fy+4;y<fy+fh-c;y+=c)t+=`<rect x="${x}" y="${y}" width="${c}" height="${c}"/>`;s+=`<g fill="none" stroke="${p.ac}" stroke-opacity=".35" stroke-width=".2">${t}</g>`}
+  else s+=`<text x="${w/2}" y="${h-7.5}" font-size="2.6" text-anchor="middle" fill="${p.ac}" fill-opacity=".6">20 × 10</text>`;break}
+ case 'polaroid':{const cn=(x,y,rot)=>`<path transform="translate(${x} ${y}) rotate(${rot})" d="M0 0 L8 0 L0 8 Z" fill="${p.ac}" fill-opacity=".55"/>`;
+  s+=cn(tA[0]-3,tA[1]-3,0)+cn(tA[2]+3,tA[1]-3,90)+cn(tA[2]+3,tA[3]+3,180)+cn(tA[0]-3,tA[3]+3,270);
+  if(full){const pf=(x,y,rot,c)=>`<g transform="rotate(${rot} ${x} ${y})"><rect x="${x-14}" y="${y-16}" width="28" height="32" fill="#fff" stroke="#000" stroke-opacity=".08" stroke-width=".3"/><rect x="${x-11.5}" y="${y-13.5}" width="23" height="22" fill="${c}"/></g>`;s+=pf(20,24,-10,p.sf)+pf(w-20,h-28,8,p.b2)+pf(w-16,30,12,p.ac)}break}
+ case 'comic':{const dots=(cx,cy,n)=>{let t='';for(let i=0;i<n;i++)for(let j=0;j<n;j++){const d=Math.hypot(i,j);if(d>n)continue;t+=`<circle cx="${cx+(cx>w/2?-1:1)*i*3}" cy="${cy+(cy>h/2?-1:1)*j*3}" r="${(1.1*(1-d/n)).toFixed(2)}"/>`}return t};
+  s+=`<g fill="${p.ac}" fill-opacity=".55">${dots(R?w-2:2,2,7)}${dots(R?2:w-2,h-2,6)}</g>`;
+  if(full){const pts=[];for(let i=0;i<24;i++){const a=Math.PI/12*i,rr=i%2?16:26;pts.push((w*.74+Math.cos(a)*rr).toFixed(1)+','+(h*.68+Math.sin(a)*rr).toFixed(1))}s+=`<polygon points="${pts.join(' ')}" fill="${p.b2}" stroke="${p.tx}" stroke-width=".6"/>`}break}
+ case 'news':
+  s+=`<line x1="8" x2="${w-8}" y1="12" y2="12" stroke="${p.tx}" stroke-width=".8"/><line x1="8" x2="${w-8}" y1="13.4" y2="13.4" stroke="${p.tx}" stroke-width=".25"/><line x1="8" x2="${w-8}" y1="${h-14}" y2="${h-14}" stroke="${p.tx}" stroke-width=".25"/>`;
+  if(full){let t='';for(let k=0;k<3;k++){const x=10+k*(w-20)/3;for(let y=h*.62;y<h-20;y+=3.2)t+=`<rect x="${x}" y="${y}" width="${(w-20)/3-4}" height="1.1" fill="${p.tx}" fill-opacity=".14"/>`}s+=t}break;
+ case 'leaves':
+  s+=leaf(R?w-4:4,6,9,R?150:30,p.ac,.55)+leaf(R?w-10:10,4,7,R?120:60,p.b2,.45)+leaf(R?4:w-4,h-6,9,R?-30:-150,p.ac,.45)+leaf(R?12:w-12,h-3,6,R?-60:-120,p.ac,.35);
+  if(full){s+=`<path d="M0 ${h*.1} C ${w*.3} ${h*.2}, ${w*.2} ${h*.5}, ${w*.05} ${h*.9}" fill="none" stroke="${p.ac}" stroke-width=".6" stroke-opacity=".5"/>`;for(let i=0;i<9;i++){const t=i/9;s+=leaf(w*.05+Math.sin(t*3)*w*.18,h*(.12+t*.75),5+r()*4,r()*360,i%3?p.ac:p.b2,.5)}}break;
+ case 'space':{const pl=(x,y,rr,c,ring)=>`<circle cx="${x}" cy="${y}" r="${rr}" fill="${c}"/>`+(ring?`<ellipse cx="${x}" cy="${y}" rx="${rr*1.7}" ry="${rr*.45}" fill="none" stroke="${p.tx}" stroke-opacity=".5" stroke-width=".45" transform="rotate(-18 ${x} ${y})"/>`:'');
+  s+=pl(R?w-11:11,11,5,p.b2,1)+pl(R?10:w-10,h-12,3.2,p.ac,0);
+  s+=`<g fill="${p.ac}">${scatter(r,full?36:14,w,h,avoid,(x,y)=>`<polygon points="${star(x,y,.6+r()*1.1)}" fill-opacity="${.4+r()*.5}"/>`)}</g>`;
+  if(full)s+=pl(w*.22,h*.66,13,p.ac,1)+pl(w*.82,h*.84,8,p.b2,0)+`<path d="M${w*.6} ${h*.58} l6 -10 l6 10 z" fill="${p.tx}" fill-opacity=".8"/>`;break}
+ case 'ticket':{let t='';for(let y=6;y<h;y+=6)t+=`<circle cx="${outX}" cy="${y}" r="1.4" fill="${p.sf}"/>`;s+=t;
+  s+=`<line x1="${R?w-8:8}" x2="${R?w-8:8}" y1="4" y2="${h-4}" stroke="${p.ac}" stroke-opacity=".5" stroke-dasharray="1.6 1.2" stroke-width=".35"/>`;
+  s+=`<text x="${R?w-4.2:4.2}" y="${h/2}" font-size="2.6" fill="${p.ac}" fill-opacity=".7" text-anchor="middle" transform="rotate(90 ${R?w-4.2:4.2} ${h/2})">ADMIT ONE · 6-4</text>`;
+  if(full)s+=`<rect x="8" y="8" width="${w-16}" height="${h-16}" rx="4" fill="none" stroke="${p.b2}" stroke-width=".6"/><circle cx="0" cy="${h/2}" r="7" fill="${p.sf}"/><circle cx="${w}" cy="${h/2}" r="7" fill="${p.sf}"/>`;break}
+ case 'sticky':{const st=(x,y,rot,c,z)=>`<g transform="rotate(${rot} ${x} ${y})"><rect x="${x}" y="${y}" width="${z}" height="${z}" fill="${c}"/><path d="M${x+z} ${y+z-5} L${x+z-5} ${y+z} L${x+z} ${y+z}Z" fill="#000" fill-opacity=".08"/></g>`;
+  s+=st(R?w-22:6,3,R?6:-6,p.sf,15)+st(R?4:w-16,h-15,R?-5:5,p.b2,12);
+  if(full)s+=st(10,24,-8,p.ac,26)+st(w-40,h*.62,7,p.sf,30)+st(w*.4,8,3,p.b2,18);break}
+ case 'blobs':
+  s+=`<circle cx="${R?w:0}" cy="0" r="${full?50:26}" ${op(p.sf,.9)}/><circle cx="${R?0:w}" cy="${h}" r="${full?44:22}" ${op(p.b2,.25)}/><circle cx="${R?w-6:6}" cy="${h-16}" r="${full?14:7}" ${op(p.ac,.22)}/>`;
+  if(full)s+=`<circle cx="${w*.15}" cy="${h*.35}" r="18" ${op(p.ac,.18)}/><circle cx="${w*.85}" cy="${h*.5}" r="10" ${op(p.b2,.3)}/>`;break;
+ case 'confetti':{const cs=[p.ac,p.b2,'#ffd23f','#3ddc97'];s+=scatter(r,full?70:30,w,h,avoid,(x,y)=>{const c=cs[Math.floor(r()*4)];return r()<.5?`<rect x="${x}" y="${y}" width="${1.2+r()*1.6}" height="${.7+r()*.7}" fill="${c}" transform="rotate(${r()*180} ${x} ${y})"/>`:`<circle cx="${x}" cy="${y}" r="${.5+r()*.7}" fill="${c}"/>`});break}
+ case 'stamp':{let t='';const m=5,rr=1.1;for(let x=m;x<=w-m;x+=3.4)t+=`<circle cx="${x}" cy="${m}" r="${rr}"/><circle cx="${x}" cy="${h-m}" r="${rr}"/>`;for(let y=m;y<=h-m;y+=3.4)t+=`<circle cx="${m}" cy="${y}" r="${rr}"/><circle cx="${w-m}" cy="${y}" r="${rr}"/>`;
+  s+=`<rect x="${m}" y="${m}" width="${w-2*m}" height="${h-2*m}" fill="none" stroke="${p.ac}" stroke-opacity=".5" stroke-width=".3"/><g fill="${p.sf}">${t}</g>`;
+  const pm=(x,y)=>`<g fill="none" stroke="${p.b2}" stroke-opacity=".55" stroke-width=".4"><circle cx="${x}" cy="${y}" r="7"/><circle cx="${x}" cy="${y}" r="5"/><path d="M${x+8} ${y-3} q3 -2 6 0 t6 0 t6 0 M${x+8} ${y} q3 -2 6 0 t6 0 t6 0 M${x+8} ${y+3} q3 -2 6 0 t6 0 t6 0"/></g>`;
+  s+=pm(R?w-40:14,13);if(full)s+=`<rect x="${w-36}" y="14" width="22" height="26" fill="${p.ac}" fill-opacity=".85"/><rect x="${w-33}" y="17" width="16" height="20" fill="${p.sf}"/>`+pm(20,h-26);break}
+ case 'gingham':{const band=(y0,hh)=>{const a=y0<=0?y0-3:y0,b=y0<=0?hh+3:hh+3;let t='';for(let x=-5;x<w+5;x+=5)t+=`<rect x="${x}" y="${a}" width="2.5" height="${b}" ${op(p.ac,.35)}/>`;for(let y=y0<=0?-5:y0;y<y0+hh+3;y+=5)t+=`<rect x="-3" y="${y}" width="${w+6}" height="2.5" ${op(p.ac,.35)}/>`;return t};
+  s+=full?band(0,h):band(0,9)+band(h-9,9);if(!full)s+=`<line x1="0" x2="${w}" y1="9.4" y2="9.4" stroke="${p.ac}" stroke-dasharray="1.2 1" stroke-width=".35"/><line x1="0" x2="${w}" y1="${h-9.4}" y2="${h-9.4}" stroke="${p.ac}" stroke-dasharray="1.2 1" stroke-width=".35"/>`;break}
+ case 'clouds':
+  s+=cloud(R?w-30:8,9,4.5,p.sf,1)+cloud(R?8:w-30,h-8,4,p.sf,1)+(full?`<rect width="${w}" height="${h*.55}" fill="${p.sf}" fill-opacity=".6"/>`+cloud(10,h*.3,7,'#fff',1)+cloud(w-46,h*.16,6,'#fff',.95)+cloud(w*.3,h*.7,5,p.sf,1)+`<circle cx="${w-18}" cy="${h*.42}" r="7" fill="${p.b2}"/>`:'');break;
+ case 'bubbles':s+=scatter(r,full?24:12,w,h,avoid,(x,y)=>{const rr=1.4+r()*(full?7:3.5);return `<circle cx="${x}" cy="${y}" r="${rr}" fill="${r()<.5?p.sf:'#fff'}" fill-opacity=".7" stroke="${r()<.5?p.ac:p.b2}" stroke-opacity=".55" stroke-width=".35"/><path d="M${x-rr*.55} ${y-rr*.15} a${rr*.6} ${rr*.6} 0 0 1 ${rr*.45} ${-rr*.42}" fill="none" stroke="#fff" stroke-width="${Math.max(.25,rr*.12)}"/>`});break;
+ case 'diary':{let t='';const x=R?5.5:w-5.5;for(let y=10;y<h-6;y+=8.5)t+=`<circle cx="${x}" cy="${y}" r="1.4" fill="${p.tx}" fill-opacity=".75"/><path d="M${R?0:w} ${y-2.2} Q ${R?7:w-7} ${y-3.5} ${x} ${y}" fill="none" stroke="#9aa0ad" stroke-width=".9"/>`;s+=t;
+  s+=`<rect x="${R?w-24:12}" y="9" width="12" height="4.5" rx="1" ${op(p.sf,1)}/><text x="${R?w-18:18}" y="12.3" font-size="2.6" text-anchor="middle" fill="${p.ac}">DIARY</text>`;
+  if(full)s+=lines(p.ac,.18,20,h-12);break}
+ case 'map':
+  s+=`<path d="M${R?w-6:6} ${h-8} C ${w*.2} ${h-4}, ${w*.9} ${h-16}, ${R?w-6:6} ${h*.5} S ${w*.5} 4, ${R?10:w-10} 8" fill="none" stroke="${p.ac}" stroke-opacity=".45" stroke-width=".5" stroke-dasharray="2 1.5"/><path d="M${R?6:w-14} 4 l8 8 m0 -8 l-8 8" stroke="${p.ac}" stroke-width=".9"/>`;
+  if(full){s+=`<g transform="translate(${w-20} ${h-26})" fill="none" stroke="${p.tx}" stroke-opacity=".55" stroke-width=".4"><circle r="9"/><path d="M0 -12 L2 0 L0 12 L-2 0Z" fill="${p.ac}" fill-opacity=".7"/><path d="M-12 0 L0 2 L12 0 L0 -2Z" fill="${p.b2}" fill-opacity=".5"/></g>`;s+=`<path d="M8 ${h*.32} q10 -8 20 -2 t18 6 t16 -6" fill="none" stroke="${p.b2}" stroke-width="2.4" stroke-opacity=".35"/><path d="M${w*.15} ${h*.62} l6 -9 l6 9 z M${w*.24} ${h*.64} l5 -7 l5 7 z" fill="${p.b2}" fill-opacity=".45"/>`}break;
+ case 'music':{const staff=(y0,x0,x1)=>{let t='';for(let i=0;i<5;i++)t+=`<line x1="${x0}" x2="${x1}" y1="${y0+i*1.6}" y2="${y0+i*1.6}"/>`;return `<g stroke="${p.tx}" stroke-opacity=".35" stroke-width=".22">${t}</g>`};
+  const note=(x,y,c)=>`<ellipse cx="${x}" cy="${y}" rx="1.2" ry=".85" transform="rotate(-20 ${x} ${y})" fill="${c}"/><line x1="${x+1.1}" x2="${x+1.1}" y1="${y}" y2="${y-5.5}" stroke="${c}" stroke-width=".35"/>`;
+  s+=staff(h-15,10,w-10)+note(w*.3,h-12.6,p.ac)+note(w*.5,h-10.2,p.b2)+note(w*.7,h-13.4,p.ac);
+  s+=`<path d="M${R?w-16:12} 8 q2 -3 4 0 q2 3 4 0" fill="none" stroke="${p.ac}" stroke-width=".5"/>`;
+  if(full)for(let k=0;k<3;k++){const y=h*.6+k*14;s+=staff(y,8,w-8)+note(20+k*20,y+2,p.ac)+note(40+k*15,y+4.5,p.b2)}break}
+ case 'sport':
+  s+=`<rect x="6" y="6" width="${w-12}" height="${h-12}" fill="none" stroke="${p.ac}" stroke-opacity=".5" stroke-width=".6"/><path d="M6 14 A8 8 0 0 0 14 6 M${w-14} 6 A8 8 0 0 0 ${w-6} 14 M6 ${h-14} A8 8 0 0 1 14 ${h-6} M${w-14} ${h-6} A8 8 0 0 1 ${w-6} ${h-14}" fill="none" stroke="${p.ac}" stroke-opacity=".5" stroke-width=".5"/>`;
+  if(full)s+=`<rect width="${w}" height="${h}" fill="${p.ac}" fill-opacity=".14"/><line x1="6" x2="${w-6}" y1="${h/2}" y2="${h/2}" stroke="#fff" stroke-width="1"/><circle cx="${w/2}" cy="${h/2}" r="16" fill="none" stroke="#fff" stroke-width="1"/><circle cx="${w*.8}" cy="${h*.3}" r="7" fill="#fff" stroke="${p.tx}" stroke-width=".4"/><path d="M${w*.8} ${h*.3-7} v14 M${w*.8-7} ${h*.3} h14" stroke="${p.b2}" stroke-width=".5"/>`;break;
+ case 'recipe':
+  s+=`<rect x="-3" y="-3" width="${w+6}" height="13" fill="${p.ac}" fill-opacity=".85"/>`;for(let x=3;x<w;x+=6)s+=`<circle cx="${x}" cy="10" r="1.8" fill="${p.bg}"/>`;
+  s+=`<line x1="10" x2="${w-10}" y1="${h-12}" y2="${h-12}" stroke="${p.b2}" stroke-width=".35" stroke-dasharray="1 1.2"/>`;
+  if(full)s+=`<g fill="none" stroke="${p.b2}" stroke-width=".6" stroke-opacity=".6"><path d="M${w-30} ${h-40} h20 l-3 16 h-14 z"/><path d="M${w-24} ${h-44} q2 -4 0 -7 M${w-18} ${h-44} q2 -4 0 -7"/></g>`+lines(p.ac,.12,24,h-50);break;
+ case 'film':{const strip=(x0,vert)=>{const ex=vert?(x0>w/2?[x0,10]:[x0-3,10]):null,ey=!vert?(x0>h/2?[x0,10]:[x0-3,10]):null;let t=`<rect x="${vert?ex[0]:-3}" y="${vert?-3:ey[0]}" width="${vert?ex[1]:w+6}" height="${vert?h+6:ey[1]}" fill="${p.ac}"/>`;for(let k=2;k<(vert?h:w);k+=5)t+=vert?`<rect x="${x0+2}" y="${k}" width="3" height="2.6" rx=".5" fill="${p.bg}"/>`:`<rect x="${k}" y="${x0+2.2}" width="2.6" height="3" rx=".5" fill="${p.bg}"/>`;return t};
+  s+=strip(R?w-7:0,true);if(full)s+=strip(0,false)+strip(h-7,false)+`<rect x="${w*.15}" y="20" width="${w*.6}" height="40" fill="${p.b2}" fill-opacity=".6"/>`;break}
+ case 'arcade':{const br=(x,y,dx,dy,c)=>`<path d="M${x} ${y+dy*8} V${y} H${x+dx*8}" fill="none" stroke="${c}" stroke-width="1.4"/>`;
+  s+=br(5,5,1,1,p.ac)+br(w-5,5,-1,1,p.b2)+br(5,h-5,1,-1,p.b2)+br(w-5,h-5,-1,-1,p.ac);
+  s+=`<text x="${w/2}" y="9" font-size="2.8" text-anchor="middle" fill="${p.ac}" fill-opacity=".8" font-family="monospace">1UP 006400  HI 999999</text>`;
+  if(full){let t='';for(let i=-8;i<=8;i++)t+=`<line x1="${w/2+i*4}" y1="${h*.62}" x2="${w/2+i*18}" y2="${h}" />`;for(let y=h*.62,k=1;y<h;y+=k*2.4,k++)t+=`<line x1="0" x2="${w}" y1="${y}" y2="${y}"/>`;s+=`<g stroke="${p.b2}" stroke-opacity=".45" stroke-width=".35">${t}</g>`}break}
+ case 'cornell':
+  s+=lines(p.b2,.35);s+=`<line x1="${R?13:w-13}" x2="${R?13:w-13}" y1="0" y2="${h}" stroke="${p.ac}" stroke-width=".45"/><line x1="0" x2="${w}" y1="17" y2="17" stroke="${p.ac}" stroke-width=".3"/>`;
+  s+=`<path d="M${R?w-34:14} 9 h20" stroke="${p.sf}" stroke-width="3.2" stroke-linecap="round"/>`;
+  if(full)s+=`<path d="M14 ${h*.3} h${w-28} M18 ${h*.36} h${w*.5}" stroke="${p.sf}" stroke-width="6" stroke-linecap="round" stroke-opacity=".8"/>`;break;
+ case 'library':
+  s+=lines(p.b2,.2);s+=`<line x1="0" x2="${w}" y1="15" y2="15" stroke="${p.ac}" stroke-width=".6"/><line x1="0" x2="${w}" y1="16.2" y2="16.2" stroke="${p.ac}" stroke-width=".25"/><line x1="${R?w-30:30}" x2="${R?w-30:30}" y1="16" y2="${h}" stroke="${p.ac}" stroke-opacity=".3" stroke-width=".25"/><circle cx="${w/2}" cy="${h-6}" r="2.2" fill="${p.sf}" stroke="${p.b2}" stroke-opacity=".4" stroke-width=".3"/>`;
+  if(full)s+=`<g transform="rotate(-12 ${w*.75} ${h*.75})"><rect x="${w*.62}" y="${h*.7}" width="34" height="13" rx="2" fill="none" stroke="${p.ac}" stroke-width=".8"/><text x="${w*.62+17}" y="${h*.7+9}" font-size="6" text-anchor="middle" fill="${p.ac}" font-weight="bold">대출 중</text></g>`;break;
+ case 'crayon':{const cs=[p.ac,'#f8961e','#f9c74f','#90be6d',p.b2,'#7b6cf6'];const wave=(y0,amp,c)=>{let d=`M-2 ${y0}`;for(let x=0;x<=w+6;x+=6)d+=` Q ${x+3} ${y0+(x/6%2?amp:-amp)} ${x+6} ${y0}`;return `<path d="${d}" fill="none" stroke="${c}" stroke-width="1.6" stroke-linecap="round" stroke-opacity=".8"/>`};
+  cs.forEach((c,i)=>{s+=wave(3+i*2,.9,c);s+=wave(h-3-i*2,.9,c)});if(full)cs.forEach((c,i)=>{s+=wave(h*.5+i*3.2,1.4,c)});break}
+ }
+ return s;
+}
+
+/* ─────────── 쪽 만들기 ─────────── */
+const themeOf=i=>TH[i]||TH[0];
+function vars(T){const p=T.p,fs=+S.fs,lh=(fs*.3528*1.8);const bf=S.bodyFont||T.bf;
+ return {css:`--bgc:${p.bg};--tx:${p.tx};--ac:${p.ac};--b2:${p.b2};--sf:${p.sf};--tf:'${T.tf}',Jua,sans-serif;--bf:'${bf}','Gowun Dodum',sans-serif;--fs:${fs}pt;--lh:${lh.toFixed(3)}mm`,lh}}
+function ttSize(t){const n=[...t].length;return n<=10?'17pt':n<=16?'14.5pt':n<=24?'12.5pt':'11pt'}
+function titleBlock(T,n,title,label){
+ const t=esc(title||'제목 없음');
+ const no= label!=null?label: T.tk==='badge'?String(n): T.tk==='news'?`제${n}호 · ${esc(S.cls)} 소식`: T.tk==='ticket'||T.tk==='box'||T.tk==='pixel'?`No.${n}`: `${n}번째 이야기`;
+ const tt=T.tk==='underline'?`<span>${t}</span>`:t;
+ return `<div class="wt" style="--tts:${ttSize(title||'')}"><div class="no">${no}</div><div class="tt">${tt}${T.tk==='speech'?'<i class="tail"></i>':''}</div></div>`;
+}
+function writingBlocks(T,w,i){
+ const b=[{t:'h',html:titleBlock(T,i+1,w.title)}];
+ if(w.img)b.push({t:'img',src:w.img});
+ let lastGap=true;
+ String(w.text||'').replace(/\r/g,'').split('\n').forEach(line=>{const s=line.trim(); if(!s){if(!lastGap){b.push({t:'gap'});lastGap=true}} else {b.push({t:'p',text:s});lastGap=false}});
+ while(b.length&&b[b.length-1].t==='gap')b.pop();
+ return b;
+}
+// 측정 상자
+const meas=$('measure');
+function measureSetup(T){const v=vars(T);meas.innerHTML=`<div class="pg R tk-${T.tk}" style="${v.css}"><div class="tr"><div class="flow"></div></div></div>`;return meas.querySelector('.flow')}
+function paginate(flow,blocks){
+ const pages=[];const fits=()=>flow.scrollHeight<=flow.clientHeight+.5;
+ const flush=()=>{pages.push(flow.innerHTML);flow.innerHTML=''};
+ const mkP=(txt,cont)=>{const e=document.createElement('p');if(cont)e.className='c';e.textContent=txt;return e};
+ for(const b of blocks){
+  if(b.t==='gap'){if(!flow.childNodes.length)continue;const g=document.createElement('div');g.className='gap';flow.appendChild(g);if(!fits()){flow.removeChild(g);flush()}continue}
+  if(b.t==='h'||b.t==='img'){const d=document.createElement('div');if(b.t==='h')d.innerHTML=b.html;else{d.className='fig';d.innerHTML=`<img src="${b.src}" alt="">`}
+   const el=b.t==='h'?d.firstChild:d;flow.appendChild(el);
+   if(!fits()){if(flow.childNodes.length>1){flow.removeChild(el);flush();flow.appendChild(el)}
+    if(!fits()&&b.t==='img'){const im=el.querySelector('img');im.style.maxHeight=(flow.clientHeight*.8)+'px'}}
+   continue}
+  let text=b.text,cont=false;
+  while(text){
+   const el=mkP(text,cont);flow.appendChild(el);
+   if(fits())break;
+   let lo=1,hi=text.length-1,best=0;
+   while(lo<=hi){const mid=(lo+hi)>>1;el.textContent=text.slice(0,mid);if(fits()){best=mid;lo=mid+1}else hi=mid-1}
+   if(best<1){flow.removeChild(el);if(flow.childNodes.length){flush();continue}flow.appendChild(el);el.textContent=text;flush();text='';break}
+   let cut=best;const sp=text.lastIndexOf(' ',best);if(sp>0&&best-sp<14)cut=sp+1;
+   el.textContent=text.slice(0,cut);flush();text=text.slice(cut).replace(/^\s+/,'');cont=true;
+  }
+ }
+ if(flow.childNodes.length)flush();
+ return pages.length?pages:[''];
+}
+let BOOK={pages:[],starts:[],T:null,lh:7};
+function buildBook(){
+ const T=themeOf(S.theme);const flow=measureSetup(T);const v=vars(T);
+ const P=[];const push=o=>P.push(o);
+ const padOdd=()=>{if(P.length%2===1)push({k:'blank'})};
+ push({k:'half'});push({k:'blank'});push({k:'tp'});push({k:'blank'});
+ if(S.preface.trim()){const bl=[{t:'h',html:titleBlock(T,0,'작가의 말','PROLOGUE')}];S.preface.replace(/\r/g,'').split('\n').forEach(l=>{const s=l.trim();bl.push(s?{t:'p',text:s}:{t:'gap'})});
+  paginate(flow,bl).forEach((h,j)=>push({k:'flow',html:h,sec:'작가의 말',first:j===0}))}
+ padOdd();push({k:'toc'});padOdd();
+ const starts=[];
+ S.w.forEach((w,i)=>{if(!(w.text||'').trim()&&!w.img){starts.push(null);return}
+  if(S.rightStart)padOdd();starts.push(P.length+1);
+  paginate(flow,writingBlocks(T,w,i)).forEach((h,j)=>push({k:'flow',html:h,sec:w.title,first:j===0,wi:i}))});
+ // 50쪽 이상 + 짝수, 마지막은 판권
+ const total=Math.max(50,P.length+1+((P.length+1)%2));
+ let f=0;while(P.length<total-1){push({k:S.filler==='blank'?'plain':'act',n:f++})}
+ push({k:'colo'});
+ BOOK={pages:P,starts,T,lh:v.lh};
+ return BOOK;
+}
+const ACTS=[['나의 낙서장','떠오르는 그림이나 생각을 마음껏 그려 보세요.','box'],['이 책을 읽은 친구의 한마디','읽어 준 친구에게 한 줄 부탁해요.','lines'],['작가 사인','작가의 사인과 오늘 날짜','box'],['다음에 쓰고 싶은 이야기','다음 책의 제목과 줄거리를 미리 적어 봐요.','lines']];
+function fmtDate(d){if(!d)return'';const [y,m,dd]=d.split('-');return `${y}년 ${+m}월 ${+dd}일`}
+function pageHTML(i,opt={}){
+ const pg=BOOK.pages[i],T=BOOK.T,n=i+1,side=n%2?'R':'L',v=vars(T);
+ const gray=opt.gray??S.gray;
+ if(!pg)return '';
+ const cls=`pg ${side} tk-${T.tk}${gray?' gray':''}`;
+ if(pg.k==='blank')return `<div class="${cls} white" style="${v.css}"><div class="tr">${opt.guide?guideSVG(side):''}</div></div>`;
+ const mode=pg.k==='half'||pg.k==='tp'?'title':'body';
+ let bg=`<svg class="bgl" viewBox="-3 -3 ${PW+6} ${PH+6}" width="${px(PW+6)}" height="${px(PH+6)}" preserveAspectRatio="none">${bgSVG(T,PW,PH,mode,side,v.lh,(T.id+1)*97+(mode==='title'?n*13:side==='L'?3:5))}</svg>`;
+ let c='',num=true,rh='';
+ const tt=esc(S.title);
+ switch(pg.k){
+  case 'half':num=false;c=`<div class="cen" style="top:72mm"><div class="half-t">${tt}</div></div>`;break;
+  case 'tp':num=false;c=`<div class="cen" style="top:52mm">${S.sub?`<div class="tp-sub">${esc(S.sub)}</div>`:''}<div class="tp-t">${tt}</div><div class="tp-a">${esc(S.cls)} ${esc(S.author||'지은이')} 지음</div></div><div class="cen" style="bottom:20mm"><div class="tp-p">${esc(S.school?S.school+' ':'')}${esc(S.cls)} 작가 프로젝트</div></div>`;break;
+  case 'toc':{let items='';S.w.forEach((w,k)=>{const st=BOOK.starts[k];if(st==null)return;items+=`<div class="it"><span class="k">${k+1}</span><span class="t">${esc(w.title||'제목 없음')}</span><span class="d"></span><span class="n">${st}</span></div>`});
+   if(!items)items='<div class="it"><span class="t" style="opacity:.6">글을 쓰면 여기에 차례가 생겨요.</span></div>';c=`<div class="toc"><h4>차례</h4>${items}</div>`;break}
+  case 'flow':c=`<div class="flow">${pg.html}</div>`;if(!pg.first)rh=`<div class="rh">${side==='L'?tt:esc(pg.sec)}</div>`;break;
+  case 'act':{const a=ACTS[pg.n%ACTS.length];c=`<div class="fill-h">${a[0]}<div class="fill-s">${a[1]}</div></div>`+(a[2]==='box'?'<div class="fill-box"></div>':`<div class="fill-lines">${'<i></i>'.repeat(11)}</div>`);break}
+  case 'plain':break;
+  case 'colo':num=false;c=`<div class="colo"><div class="ct">${tt}</div>${S.sub?esc(S.sub)+'<br>':''}<hr>발행일 ${fmtDate(S.date)}<br>지은이 ${esc(S.author||'')}${S.teacher?`<br>지도 교사 ${esc(S.teacher)}`:''}<br>펴낸곳 ${esc(S.publisher||'부크크')}${S.isbn?`<br>ISBN ${esc(S.isbn)}`:''}<hr>${esc(S.school?S.school+' ':'')}${esc(S.cls)} 작가 프로젝트로 만든 책입니다.<br>이 책의 글과 그림은 지은이의 것입니다. 허락 없이 옮겨 쓰지 마세요.</div>`;break;
+ }
+ const pn=num?`<div class="pn"><i>${n}</i></div>`:'';
+ return `<div class="${cls}" style="${v.css}">${bg}<div class="tr">${c}${rh}${pn}${opt.guide?guideSVG(side):''}</div></div>`;
+}
+function guideSVG(side){const R=side!=='L';const x=R?18:16;return `<svg class="guides" viewBox="0 0 ${PW} ${PH}" width="${px(PW)}" height="${px(PH)}" style="overflow:visible"><rect x="0" y="0" width="${PW}" height="${PH}" fill="none" stroke="#e6007e" stroke-width=".35"/><rect x="${x}" y="22" width="93" height="144" fill="none" stroke="#e6007e" stroke-width=".3" stroke-dasharray="1.5 1"/><rect x="5" y="5" width="${PW-10}" height="${PH-10}" fill="none" stroke="#00a0e9" stroke-width=".25" stroke-dasharray="1 1"/><line x1="${R?0:PW}" x2="${R?0:PW}" y1="0" y2="${PH}" stroke="#e6007e" stroke-width=".8"/></svg>`}
+
+/* ─────────── 표지 ─────────── */
+function estSpine(n){return Math.max(2,+(n*0.0654).toFixed(2))}
+function coverGeo(){const C=S.cover,n=BOOK.pages.length||50;const s=+(C.spine||estSpine(n));const wing=!!C.wing,ww=wing?+(C.wingW||100):0,f=wing?3:0,b=BLEED;
+ // 부크크 형식: 재단 3 + 뒷날개 + 뒤표지 127 + 책등 + 앞표지 127 + 앞날개 + 재단 3
+ // f(3mm)는 앞·뒤표지 그림을 날개 쪽으로 이어 그리는 폭이며 전체 크기에는 더하지 않음
+ const W=b*2+ww*2+PW*2+s,H=PH+b*2;
+ const xBW=b, xB=b+ww, xS=xB+PW, xF=xS+s, xFW=xF+PW;
+ return {s,wing,ww,f,b,W,H,xBW,xB,xS,xF,xFW,backVis:xB,frontVis:xF};}
+function frontInner(T,o={}){
+ const C=S.cover,t=esc(S.title||'제목'),n=[...(S.title||'')].length;
+ const big=n<=6?'34pt':n<=10?'28pt':n<=16?'23pt':'19pt';
+ const au=`${esc(S.cls)} ${esc(S.author||'지은이')} 지음`;
+ const img=C.img;const im=(st)=>img?`<img class="im" src="${img}" alt="" style="${st}">`:'';
+ const sub=S.sub?`<div class="su">${esc(S.sub)}</div>`:'';
+ switch(T.cl){
+  case 'label':return `<div class="fr"><div style="position:absolute;left:13mm;right:13mm;top:${img?'24mm':'50mm'};background:#fff;border:.7mm solid ${T.p.ac};border-radius:4mm;padding:8mm 6mm;text-align:center;color:#222;box-shadow:1.5mm 1.5mm 0 ${T.p.ac}">
+    <div class="cl">${esc(S.cls)} 작가 프로젝트</div><div class="ti" style="font-size:${big};color:#222;margin:4mm 0 3mm">${t}</div>${S.sub?`<div class="su" style="color:#333">${esc(S.sub)}</div>`:''}</div>
+    ${img?`<div style="position:absolute;left:28mm;right:28mm;top:100mm;height:58mm;border-radius:3mm;overflow:hidden;border:1mm solid #fff">${im('width:100%;height:100%')}</div>`:''}
+    <div class="au" style="position:absolute;left:0;right:0;bottom:13mm;text-align:center">${au}</div></div>`;
+  case 'center':return `<div class="fr" style="text-align:center">${img?`<div style="position:absolute;left:38mm;right:38mm;top:20mm;aspect-ratio:1;border-radius:50%;overflow:hidden;border:1.2mm solid ${T.p.ac}">${im('width:100%;height:100%')}</div>`:''}
+    <div style="position:absolute;left:12mm;right:12mm;top:${img?'86mm':'60mm'}">${sub}<div class="ti" style="font-size:${big};margin-top:4mm">${t}</div><div style="width:18mm;height:1mm;background:${T.p.ac};margin:6mm auto 0;border-radius:1mm"></div></div>
+    <div style="position:absolute;left:0;right:0;bottom:14mm"><div class="au">${au}</div></div></div>`;
+  case 'frame':return `<div class="fr"><div style="position:absolute;left:18mm;right:18mm;top:16mm;background:#fff;padding:3.5mm 3.5mm 12mm;box-shadow:0 1mm 3mm rgba(0,0,0,.25);transform:rotate(-2.5deg)">
+    <div style="height:72mm;background:${T.p.sf};overflow:hidden;display:flex;align-items:center;justify-content:center">${img?im('width:100%;height:100%'):`<div style="font-family:var(--tf);font-size:30pt;color:${T.p.ac}">${esc((S.cls||'').replace(/[^0-9]+/g,'-').replace(/^-|-$/g,'')||'6-4')}</div>`}</div>
+    <div style="position:absolute;left:0;right:0;bottom:3mm;text-align:center;font-family:var(--tf);font-size:9pt;color:#555">${esc(S.cls)}</div></div>
+    <div style="position:absolute;left:12mm;right:12mm;top:112mm">${sub}<div class="ti" style="font-size:${big};margin-top:3mm">${t}</div></div>
+    <div class="au" style="position:absolute;left:12mm;bottom:13mm">${au}</div></div>`;
+  case 'poster':return `<div class="fr"><div style="position:absolute;left:11mm;right:11mm;top:16mm"><div class="cl">${esc(S.cls)}</div><div class="ti" style="font-size:calc(${big} * 1.18);margin-top:5mm">${t}</div><div style="margin-top:4mm">${sub}</div></div>
+    ${img?`<div style="position:absolute;right:11mm;bottom:34mm;width:56mm;height:56mm;border-radius:3mm;overflow:hidden;border:1mm solid ${T.p.ac};transform:rotate(3deg)">${im('width:100%;height:100%')}</div>`:''}
+    <div style="position:absolute;left:0;right:0;bottom:0;height:24mm;background:${T.p.ac};"></div><div class="au" style="position:absolute;left:11mm;bottom:9mm;color:#fff">${au}</div></div>`;
+  case 'news':return `<div class="fr"><div style="position:absolute;left:10mm;right:10mm;top:13mm;border-top:1.4mm solid ${T.p.tx};border-bottom:.4mm solid ${T.p.tx};padding:2mm 0;display:flex;justify-content:space-between;font-family:var(--tf);font-size:9pt"><span>${esc(S.cls)} 소식</span><span>${fmtDate(S.date)}</span></div>
+    <div style="position:absolute;left:10mm;right:10mm;top:30mm"><div class="ti" style="font-size:${big}">${t}</div><div style="margin-top:3mm">${sub}</div></div>
+    <div style="position:absolute;left:10mm;right:10mm;top:${img?'78mm':'84mm'};height:${img?'56mm':'0'};overflow:hidden;border:${img?'.4mm solid '+T.p.tx:'0'}">${im('width:100%;height:100%')}</div>
+    <div class="au" style="position:absolute;left:10mm;bottom:14mm;background:${T.p.ac};color:#fff;padding:1mm 3mm">특종 · ${au}</div></div>`;
+  default:/* stack */return `<div class="fr"><div style="position:absolute;left:13mm;right:15mm;top:26mm;background:${T.p.sf};padding:9mm 7mm;transform:rotate(-3deg);box-shadow:1mm 1.4mm 0 rgba(0,0,0,.12)"><div class="ti" style="font-size:${big};color:${T.p.tx}">${t}</div></div>
+    ${S.sub?`<div style="position:absolute;left:22mm;right:12mm;top:${img?'78mm':'86mm'};background:${T.p.b2};color:#fff;padding:2mm 4mm;transform:rotate(2deg);font-size:9.5pt">${esc(S.sub)}</div>`:''}
+    ${img?`<div style="position:absolute;left:30mm;right:22mm;top:96mm;height:52mm;border:1mm solid #fff;box-shadow:0 1mm 2mm rgba(0,0,0,.2);transform:rotate(-1.5deg);overflow:hidden">${im('width:100%;height:100%')}</div>`:''}
+    <div class="au" style="position:absolute;right:13mm;bottom:13mm;background:#fff;color:#222;padding:1.6mm 4mm;border-radius:6mm;border:.5mm solid ${T.p.tx}">${au}</div></div>`;
+ }
+}
+function coverTheme(){return themeOf(S.cover.theme==null?S.theme:S.cover.theme)}
+function pnl(T,x,w,mode,seed,inner=''){return `<div class="pnl" style="left:${x}mm;width:${w}mm"><svg viewBox="0 0 ${w} ${PH+6}" width="${px(w)}" height="${px(PH+6)}" preserveAspectRatio="none">${bgSVG(T,w,PH+6,mode,'R',7,seed)}</svg>${inner}</div>`}
+function coverHTML(opt={}){
+ const T=coverTheme(),g=coverGeo(),v=vars(T),C=S.cover;
+ let h=`<div class="cv" style="width:${g.W}mm;height:${g.H}mm;${v.css}">`;
+ const backW=g.wing?g.f+PW:g.b+PW, backX=g.wing?g.xB-g.f:0;
+ const frontW=g.wing?PW+g.f:PW+g.b;
+ if(g.wing)h+=pnl(T,0,g.b+g.ww-g.f,'wing',(T.id+3)*31,`<div class="box" style="left:${g.b}mm;width:${g.ww-g.f}mm"><div class="wg">${esc(C.wingBack)}</div></div>`);
+ h+=pnl(T,backX,backW,'cover',(T.id+5)*17,`<div class="box" style="left:${g.backVis-backX}mm;width:${PW}mm"><div class="bk"><div class="bk-in"><div class="bh">${esc(S.title)}</div>${esc(C.back||'뒤표지 소개 글을 써 주세요.')}</div></div><div class="bk-foot">${esc(S.school?S.school+' ':'')}${esc(S.cls)} 작가 프로젝트</div></div>`);
+ const sp=g.s>=6?`<div class="sp" style="color:#fff;transform:translate(-50%,-50%) rotate(90deg);font-size:${Math.min(10,g.s*1.6)}pt">${esc(S.title)} <span style="opacity:.7;font-size:.8em;margin-left:6mm">${esc(S.author)}</span></div>`:'';
+ h+=`<div class="pnl" style="left:${g.xS}mm;width:${g.s}mm;background:${T.p.ac}">${sp}</div>`;
+ h+=pnl(T,g.xF,frontW,'cover',(T.id+1)*53,`<div class="box" style="left:0;width:${PW}mm">${frontInner(T)}</div>`);
+ if(g.wing)h+=pnl(T,g.xFW+g.f,g.ww-g.f+g.b,'wing',(T.id+9)*29,`<div class="box" style="left:0;width:${g.ww-g.f}mm"><div class="wg">${C.photo?`<img src="${C.photo}" alt="">`:''}<div class="wh">지은이 ${esc(S.author||'')}</div>${esc(C.wingFront)}</div></div>`);
+ if(opt.guide)h+=coverGuide(g);
+ return h+'</div>';
+}
+function coverGuide(g){const y0=g.b,y1=g.b+PH;let l='';const vl=(x,c,d)=>l+=`<line x1="${x}" x2="${x}" y1="0" y2="${g.H}" stroke="${c}" stroke-width=".35" ${d?'stroke-dasharray="2 1.2"':''}/>`;
+ vl(g.b,'#e6007e');vl(g.W-g.b,'#e6007e');vl(g.xS,'#00a0e9',1);vl(g.xF,'#00a0e9',1);if(g.wing){vl(g.xB,'#00a0e9',1);vl(g.xFW,'#00a0e9',1);l+=`<rect x="${g.xB-g.f}" y="0" width="${g.f}" height="${g.H}" fill="#e6007e" fill-opacity=".25"/><rect x="${g.xFW}" y="0" width="${g.f}" height="${g.H}" fill="#e6007e" fill-opacity=".25"/>`}
+ l+=`<line x1="0" x2="${g.W}" y1="${y0}" y2="${y0}" stroke="#e6007e" stroke-width=".35"/><line x1="0" x2="${g.W}" y1="${y1}" y2="${y1}" stroke="#e6007e" stroke-width=".35"/>`;
+ l+=`<rect x="${g.xS-12-40}" y="${y1-10-25}" width="40" height="25" fill="#fff" fill-opacity=".6" stroke="#e6007e" stroke-width=".3" stroke-dasharray="1 1"/><text x="${g.xS-32}" y="${y1-21}" font-size="3" text-anchor="middle" fill="#e6007e">바코드 자리 비움</text>`;
+ return `<svg class="guides" viewBox="0 0 ${g.W} ${g.H}" width="${px(g.W)}" height="${px(g.H)}">${l}</svg>`}
+function frontOnly(T){const v=vars(T);return `<div class="cv" style="width:${PW}mm;height:${PH}mm;${v.css}"><div class="pnl" style="left:0;top:0;width:${PW}mm;height:${PH}mm"><svg viewBox="0 3 ${PW} ${PH}" width="${px(PW)}" height="${px(PH)}" preserveAspectRatio="none">${bgSVG(T,PW,PH+6,'cover','R',7,(T.id+1)*53)}</svg><div class="box" style="left:0;top:0;width:${PW}mm">${frontInner(T)}</div></div></div>`}
+
+/* ─────────── 미리보기 ─────────── */
+let view='in',spreadIx=0;
+function spreads(){const n=BOOK.pages.length;const a=[[null,0]];for(let i=1;i<n;i+=2)a.push([i,i+1<n?i+1:null]);return a}
+function fit(el,w,h){const st=$('stage');const avail=st.clientWidth-36;const sc=Math.min(1,avail/w);const sc2=Math.min(sc,(window.innerHeight*.78)/h);const s=Math.max(.2,sc2);el.style.transform=`scale(${s})`;el.style.width=w+'px';el.style.height=h+'px';$('scaler').style.width=(w*s)+'px';$('scaler').style.height=(h*s)+'px'}
+function renderView(){
+ const sc=$('scaler'),guide=$('showGuide').checked;
+ if(view==='in'){const sp=spreads();spreadIx=Math.max(0,Math.min(spreadIx,sp.length-1));const [a,b]=sp[spreadIx];
+  const cl=guide?'clip bleed':'clip';sc.innerHTML=`<div class="spread" id="spr" style="transform-origin:0 0">${a==null?'<div class="ghost"></div>':`<div class="${cl}">${pageHTML(a,{guide})}</div>`}${b==null?'<div class="ghost"></div>':`<div class="${cl}">${pageHTML(b,{guide})}</div>`}</div>`;
+  fit($('spr'),px(PW*2),px(PH));$('vnav').hidden=false;$('vnote').textContent=guide?'분홍 실선 밖 3mm는 재단 여백(잘려 나가는 부분), 분홍 점선은 글 영역이에요.':'왼쪽은 짝수 쪽, 오른쪽은 홀수 쪽이에요. 안내선을 켜면 재단 여백 3mm까지 보여요.';
+  $('pinfo').textContent=`${a==null?'':a+1+' '}${a!=null&&b!=null?'·':''}${b==null?'':' '+(b+1)} / ${BOOK.pages.length}쪽`;
+ } else {const g=coverGeo();sc.innerHTML=`<div id="spr" style="transform-origin:0 0;box-shadow:0 10px 30px rgba(0,0,0,.25)">${coverHTML({guide})}</div>`;fit($('spr'),px(g.W),px(g.H));$('vnav').hidden=true;
+  $('vnote').textContent=(g.wing?'왼쪽부터 뒷날개 · 뒤표지 · 책등 · 앞표지 · 앞날개':'왼쪽부터 뒤표지 · 책등 · 앞표지')+(guide&&g.wing?' · 분홍 띠 3mm는 표지 그림을 날개 쪽으로 이어 그린 부분':'');}
+}
+let rT=0;function refresh(now){clearTimeout(rT);const go=()=>{buildBook();renderView();stats();coverInfo();guideList();updateCount()};if(now)go();else rT=setTimeout(go,350)}
+
+/* ─────────── 입력 연결 ─────────── */
+const FIELDS=['title','sub','author','cls','school','date','fs','bodyFont','teacher','publisher','isbn','preface'];
+FIELDS.forEach(k=>{const e=$(k);e.value=S[k]??'';e.addEventListener('input',()=>{S[k]=e.value;persist();refresh(k==='fs'||k==='bodyFont')})});
+$('rightStart').checked=S.rightStart;$('rightStart').onchange=e=>{S.rightStart=e.target.checked;persist();refresh(1)};
+$('filler').value=S.filler;$('filler').onchange=e=>{S.filler=e.target.value;persist();refresh(1)};
+$('gray').checked=S.gray;$('gray').onchange=e=>{S.gray=e.target.checked;persist();renderView()};
+$('showGuide').onchange=renderView;
+['back','wingFront','wingBack'].forEach(k=>{const e=$(k);e.value=S.cover[k]||'';e.addEventListener('input',()=>{S.cover[k]=e.value;persist();refresh()})});
+$('wing').checked=S.cover.wing;$('wing').onchange=e=>{S.cover.wing=e.target.checked;persist();setView('cv');refresh(1)};
+$('wingW').value=S.cover.wingW;$('wingW').oninput=e=>{S.cover.wingW=+e.target.value||100;persist();refresh()};
+$('spine').oninput=e=>{const v=parseFloat(e.target.value);S.cover.spine=isFinite(v)&&v>0?v:null;persist();refresh()};
+
+function readImg(file,max=1400){return new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,max/Math.max(im.width,im.height));const c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);res(c.toDataURL('image/jpeg',.86))};im.onerror=rej;im.src=fr.result};fr.onerror=rej;fr.readAsDataURL(file)})}
+function imgPair(inp,prev,del,get,set){const sync=()=>{const v=get();$(prev).hidden=!v;$(del).hidden=!v;if(v)$(prev).src=v};sync();
+ $(inp).onchange=async e=>{const f=e.target.files[0];if(!f)return;try{set(await readImg(f));sync();persist();refresh(1)}catch(_){toast('그림을 읽지 못했어요.')}e.target.value=''};
+ $(del).onclick=()=>{set(null);sync();persist();refresh(1)}}
+imgPair('cimg','cimgPrev','cimgDel',()=>S.cover.img,v=>S.cover.img=v);
+imgPair('photo','photoPrev','photoDel',()=>S.cover.photo,v=>S.cover.photo=v);
+
+/* 나의 글 15편 */
+function wCard(w,i){return `<div class="wcard" data-i="${i}"><div class="whead"><span class="wnum">${i+1}</span><div><div class="wtopic">${esc(w.topic)}</div><div class="whint">${esc(w.hint)}</div></div></div>
+ <label class="f"><span>제목</span><input type="text" class="wtitle" maxlength="40" value="${esc(w.title)}"></label>
+ <label class="f"><span>나의 글</span><textarea class="wtext" rows="7" placeholder="여기에 나의 글을 써요. 줄을 비우면 문단 사이가 한 줄 띄어져요.">${esc(w.text)}</textarea></label>
+ <div class="wmeta"><span class="cnt">${[...(w.text||'')].length}자</span><span class="wimg">${w.img?`<img src="${w.img}" alt="">`:''}<label class="btn alt sm">그림 넣기<input type="file" accept="image/*" class="wfile" hidden></label>${w.img?'<button class="btn alt sm wdel">그림 빼기</button>':''}<button class="btn alt sm wswap">주제 바꾸기</button></span></div></div>`}
+function drawW(){$('wlist').innerHTML=S.w.map(wCard).join('')}
+drawW();
+$('wlist').addEventListener('input',e=>{const c=e.target.closest('.wcard');if(!c)return;const w=S.w[+c.dataset.i];
+ if(e.target.classList.contains('wtitle'))w.title=e.target.value;
+ if(e.target.classList.contains('wtext')){w.text=e.target.value;c.querySelector('.cnt').textContent=[...w.text].length+'자'}
+ persist();refresh()});
+$('wlist').addEventListener('change',async e=>{if(!e.target.classList.contains('wfile'))return;const c=e.target.closest('.wcard'),i=+c.dataset.i,f=e.target.files[0];if(!f)return;
+ try{S.w[i].img=await readImg(f,1200);c.outerHTML=wCard(S.w[i],i);persist();refresh(1)}catch(_){toast('그림을 읽지 못했어요.')}});
+$('wlist').addEventListener('click',e=>{const c=e.target.closest('.wcard');if(!c)return;const i=+c.dataset.i,w=S.w[i];
+ if(e.target.classList.contains('wdel')){w.img=null;c.outerHTML=wCard(w,i);persist();refresh(1)}
+ if(e.target.classList.contains('wswap')){const all=TOPICS.concat(EXTRA);const used=new Set(S.w.map(x=>x.topic));let k=S.pool||0,t=null;for(let g=0;g<all.length;g++){const cand=all[(k+g)%all.length];if(!used.has(cand.t)){t=cand;S.pool=(k+g+1)%all.length;break}}
+  if(!t)return;const keep=w.title&&w.title!==w.topic;w.topic=t.t;w.hint=t.h;if(!keep)w.title=t.t;c.outerHTML=wCard(w,i);persist();refresh();toast(`새 주제: ${t.t}`)}});
+function updateCount(){const n=S.w.filter(w=>(w.text||'').trim()).length;$('wprog').style.width=(n/15*100)+'%';$('wcount').textContent=`15편 중 ${n}편 썼어요.`}
+
+/* 디자인 고르기 */
+function thumbInner(T){const save=S.theme;const old=BOOK;S.theme=T.id;const v=vars(T);
+ const html=`<div class="pg R tk-${T.tk}" style="${v.css}"><svg class="bgl" viewBox="-3 -3 ${PW+6} ${PH+6}" width="${px(PW+6)}" height="${px(PH+6)}" preserveAspectRatio="none">${bgSVG(T,PW,PH,'body','R',v.lh,(T.id+1)*97+5)}</svg><div class="tr"><div class="flow">${titleBlock(T,1,'투명인간이 된 날')}<p>아침에 눈을 떴는데 거울에 내가 보이지 않았다. 처음에는 꿈인 줄 알았다. 그런데 동생이 내 발을 밟고도 그냥 지나갔다.</p><p>나는 조용히 학교로 갔다. 급식실 앞에서 오늘 메뉴를 제일 먼저 확인했다.</p></div><div class="pn"><i>9</i></div></div></div>`;
+ S.theme=save;BOOK=old;return html}
+function drawGrids(){
+ $('themeGrid').innerHTML=TH.map(T=>`<button class="pick" data-t="${T.id}" aria-pressed="${S.theme===T.id}"><span class="th">${thumbInner(T)}</span><span class="nm">${T.id+1}. ${T.name}</span><span class="ds">${T.desc}</span></button>`).join('');
+ $('coverGrid').innerHTML=TH.map(T=>`<button class="pick" data-c="${T.id}" aria-pressed="${coverTheme().id===T.id}"><span class="th">${frontOnly(T)}</span><span class="nm">${T.id+1}. ${T.name}</span></button>`).join('');
+ scaleThumbs();}
+function scaleThumbs(){document.querySelectorAll('.pick .th').forEach(th=>{const k=th.clientWidth/px(PW);const c=th.firstElementChild;if(c)c.style.transform=c.classList.contains('pg')?`scale(${k}) translate(-3mm,-3mm)`:`scale(${k})`,c.style.transformOrigin='0 0',c.style.position='absolute'})}
+$('themeGrid').onclick=e=>{const b=e.target.closest('.pick');if(!b)return;S.theme=+b.dataset.t;persist();document.querySelectorAll('#themeGrid .pick').forEach(x=>x.setAttribute('aria-pressed',x===b));setView('in');refresh(1);if(S.cover.theme==null)markCover()};
+$('coverGrid').onclick=e=>{const b=e.target.closest('.pick');if(!b)return;S.cover.theme=+b.dataset.c;persist();markCover();setView('cv');refresh(1)};
+$('coverFollow').onclick=()=>{S.cover.theme=null;persist();markCover();setView('cv');refresh(1)};
+function markCover(){const id=coverTheme().id;document.querySelectorAll('#coverGrid .pick').forEach(x=>x.setAttribute('aria-pressed',+x.dataset.c===id))}
+let gridsDrawn=false;function ensureGrids(){if(!gridsDrawn){gridsDrawn=true;drawGrids()}else scaleThumbs()}
+// 표지 그리드는 제목이 바뀌면 다시 그림
+let cgT=0;['title','sub','author','cls'].forEach(k=>$(k).addEventListener('input',()=>{clearTimeout(cgT);cgT=setTimeout(()=>{if(gridsDrawn)drawGrids()},900)}));
+
+/* 쪽수·규격 */
+function stats(){const n=BOOK.pages.length,used=S.w.filter(w=>(w.text||'').trim()).length;const fill=BOOK.pages.filter(p=>p.k==='act'||p.k==='plain').length;
+ $('stats').innerHTML=`<div class="stat"><b>${n}쪽</b><span>총 쪽수 · ${n>=50?'<span class="ok">50쪽 이상 ✓</span>':'<span class="warn">50쪽 미만</span>'}</span></div><div class="stat"><b>${used}/15</b><span>쓴 글 ${used<15?'<span class="warn">· 빈 글은 책에서 빠져요</span>':'<span class="ok">✓</span>'}</span></div><div class="stat"><b>${fill}쪽</b><span>${S.filler==='blank'?'빈 쪽':'활동 쪽'}으로 채움</span></div><div class="stat"><b>133×194</b><span>mm · 46판 127×188 + 재단 여백 사방 3mm</span></div>`}
+function coverInfo(){const g=coverGeo();$('spine').placeholder=String(estSpine(BOOK.pages.length));if(S.cover.spine)$('spine').value=S.cover.spine;
+ $('wingW').disabled=!S.cover.wing;
+ $('spineNote').innerHTML=`지금 ${BOOK.pages.length}쪽이면 책등은 약 <b>${estSpine(BOOK.pages.length)}mm</b>예요(추정). 부크크 Step 1에서 쪽수를 넣으면 나오는 책등 두께로 바꿔 넣으세요. 책등이 6mm보다 얇으면 책등 글씨는 넣지 않아요.`;
+ $('coverSize').innerHTML=`<dt>표지 전체</dt><dd>${g.W.toFixed(2)} × ${g.H} mm</dd><dt>앞·뒤표지</dt><dd>127 × 188 mm${g.wing?' (그림은 날개 쪽으로 3mm 이어 그림)':''}</dd><dt>책등</dt><dd>${g.s} mm</dd>${g.wing?`<dt>날개</dt><dd>${g.ww} mm × 2</dd>`:''}<dt>재단 여백</dt><dd>사방 3 mm</dd>`}
+function guideList(){const n=BOOK.pages.length,g=coverGeo();
+ const L=[
+  ['Step 1 · 도서 형태',`도서 컬러: 내지 <b>${S.gray?'흑백':'컬러'}</b>${S.gray?'':' (흑백으로 내려면 3단계에서 흑백 보기를 켜고 PDF를 다시 만들어요)'} · 판형: <b>46판</b> · 표지 재질: 마음에 드는 것(종이 샘플을 우편으로 받아 볼 수 있어요) · 책 날개: <b>${S.cover.wing?'있음':'없음'}</b>`],
+  ['Step 2 · 원고 등록',`표제 <b>${esc(S.title)}</b>${S.sub?` / 부제 <b>${esc(S.sub)}</b>`:''} · 페이지 수 <b>${n}</b> · ISBN: 서점에 팔려면 부크크에서 무료로 받고, 소장용이면 비워 둬요 · 원고 파일: 4단계에서 받은 <b>내지 PDF</b> (쪽 크기 133×194mm = 127×188mm + 사방 3mm 재단 여백, 100MB까지)`],
+  ['Step 3 · 표지 디자인',`'직접 올리기'에 5단계에서 받은 <b>표지 PDF</b>를 올려요 (${g.W.toFixed(1)} × ${g.H}mm, 책등 ${g.s}mm). 부크크의 표지 규격 체크와 숫자가 같은지 먼저 확인해요.`],
+  ['Step 4 · 가격 정책','최소 정가가 표시돼요. 반 친구들이 소장할 책이면 외부 서점 입점은 꺼도 돼요.'],
+  ['Step 5 · 최종 확인',`도서 소개(뒤표지 글을 써도 좋아요), 목차, 저자 소개를 넣고 제출해요. 심사는 영업일 기준 최대 7일이고, 제출한 뒤에는 고칠 수 없어요. 결과는 '심사/신청실'에서 봐요.`]
+ ];
+ $('bookkGuide').innerHTML=L.map(([a,b])=>`<li><b>${a}</b><br>${b}</li>`).join('')}
+
+/* ─────────── 내보내기 ─────────── */
+const work=$('work');
+async function snap(html,scale,gray){work.innerHTML=html;const el=work.firstElementChild;await document.fonts.ready;await Promise.all([...el.querySelectorAll('img')].map(im=>im.complete?0:new Promise(r=>{im.onload=im.onerror=r})));
+ const c=await html2canvas(el,{scale,backgroundColor:'#ffffff',logging:false,useCORS:true,scrollX:-window.scrollX,scrollY:-window.scrollY});
+ if(gray){const x=c.getContext('2d'),d=x.getImageData(0,0,c.width,c.height),a=d.data;for(let i=0;i<a.length;i+=4){const y=a[i]*.299+a[i+1]*.587+a[i+2]*.114;a[i]=a[i+1]=a[i+2]=y}x.putImageData(d,0,0)}
+ work.innerHTML='';return c}
+async function saveFile(name,blob){
+ try{if(window.claude&&window.claude.use){const d=await window.claude.use('downloads');if(d){await d.save({filename:name,data:blob});return true}}}
+ catch(e){if(e&&e.code==='declined'){toast('저장을 취소했어요.');return false}if(e&&e.code==='rate_limited'){toast('잠시 뒤 다시 눌러 주세요.');return false}}
+ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},4000);return true}
+const fname=ext=>`${(S.title||'나의책').replace(/[\\/:*?"<>|]/g,'').trim()}_${S.author||'작가'}_${ext}`;
+function libsOk(){if(!window.html2canvas||!window.jspdf){toast('PDF 도구를 불러오지 못했어요. 인터넷 연결을 확인하고 새로고침해 주세요.');return false}return true}
+$('mkPdf').onclick=async()=>{if(!libsOk())return;const b=$('mkPdf');b.disabled=true;refresh(1);await document.fonts.ready;refresh(1);
+ const N=BOOK.pages.length,sc=(+$('dpi').value)/96;$('pdfProgWrap').hidden=false;
+ try{const QW=PW+BLEED*2,QH=PH+BLEED*2;const doc=new jspdf.jsPDF({unit:'mm',format:[QW,QH],orientation:'portrait',compress:true});
+  for(let i=0;i<N;i++){$('pdfMsg').textContent=`${i+1} / ${N}쪽 만드는 중…`;$('pdfProg').style.width=((i+1)/N*100)+'%';
+   const c=await snap(pageHTML(i,{gray:false,guide:false}),sc,S.gray);if(i)doc.addPage([QW,QH],'portrait');doc.addImage(c.toDataURL('image/jpeg',.9),'JPEG',0,0,QW,QH,undefined,'FAST')}
+  const blob=doc.output('blob');const ok=await saveFile(fname('내지.pdf'),blob);$('pdfMsg').textContent=ok?`내지 PDF ${N}쪽 완성 · 쪽 크기 ${QW}×${QH}mm (${(blob.size/1048576).toFixed(1)}MB). 부크크 '원고 등록'에 올리세요.`:'저장하지 않았어요.'}
+ catch(e){console.error(e);$('pdfMsg').textContent='PDF를 만들다가 멈췄어요. 화질을 200dpi로 낮춰 다시 해 보세요.'}
+ b.disabled=false};
+$('mkCover').onclick=async()=>{if(!libsOk())return;const b=$('mkCover');b.disabled=true;$('coverMsg').textContent='표지 만드는 중…';
+ try{refresh(1);const g=coverGeo();const c=await snap(coverHTML({guide:false}),300/96,false);
+  const doc=new jspdf.jsPDF({unit:'mm',format:[g.W,g.H],orientation:'landscape'});doc.addImage(c.toDataURL('image/jpeg',.92),'JPEG',0,0,g.W,g.H,undefined,'FAST');
+  const ok=await saveFile(fname('표지.pdf'),doc.output('blob'));$('coverMsg').textContent=ok?`표지 PDF 완성: ${g.W.toFixed(2)} × ${g.H}mm (책등 ${g.s}mm${g.wing?', 날개 '+g.ww+'mm':''})`:'저장하지 않았어요.'}
+ catch(e){console.error(e);$('coverMsg').textContent='표지를 만들다가 멈췄어요. 다시 눌러 주세요.'}b.disabled=false};
+$('mkFront').onclick=async()=>{if(!window.html2canvas){libsOk();return}const b=$('mkFront');b.disabled=true;
+ try{const c=await snap(frontOnly(coverTheme()),1600/px(PW),false);const blob=await new Promise(r=>c.toBlob(r,'image/jpeg',.92));await saveFile(fname('앞표지.jpg'),blob)}catch(e){console.error(e);toast('앞표지를 만들지 못했어요.')}b.disabled=false};
+$('printPdf').onclick=async()=>{refresh(1);await document.fonts.ready;const pr=$('printRoot');pr.innerHTML=BOOK.pages.map((_,i)=>pageHTML(i,{guide:false})).join('');
+ let st=document.getElementById('pgsize');if(!st){st=document.createElement('style');st.id='pgsize';document.head.appendChild(st)}st.textContent=`@page{size:${PW+BLEED*2}mm ${PH+BLEED*2}mm;margin:0}`;
+ document.body.classList.add('printing');const done=()=>{document.body.classList.remove('printing');pr.innerHTML='';window.removeEventListener('afterprint',done)};window.addEventListener('afterprint',done);
+ try{window.print()}catch(e){done();toast('이 화면에서는 인쇄 창을 열 수 없어요. 내지 PDF 만들기를 써 주세요.')}};
+$('saveJson').onclick=()=>saveFile(fname('작업.json'),new Blob([JSON.stringify(S)],{type:'application/json'}));
+$('loadJson').onchange=e=>{const f=e.target.files[0];if(!f)return;const fr=new FileReader();fr.onload=()=>{try{const o=JSON.parse(fr.result);if(!o||!Array.isArray(o.w))throw 0;S=Object.assign(DEF(),o);S.cover=Object.assign(DEF().cover,o.cover||{});
+  FIELDS.forEach(k=>$(k).value=S[k]??'');['back','wingFront','wingBack'].forEach(k=>$(k).value=S.cover[k]||'');$('rightStart').checked=S.rightStart;$('filler').value=S.filler;$('gray').checked=S.gray;$('wing').checked=S.cover.wing;$('wingW').value=S.cover.wingW;$('spine').value=S.cover.spine||'';
+  drawW();imgPair('cimg','cimgPrev','cimgDel',()=>S.cover.img,v=>S.cover.img=v);imgPair('photo','photoPrev','photoDel',()=>S.cover.photo,v=>S.cover.photo=v);if(gridsDrawn)drawGrids();persist();refresh(1);toast('작업 파일을 불러왔어요.')}catch(_){toast('작업 파일이 아니에요.')}};fr.readAsText(f);e.target.value=''};
+
+/* ─────────── 단계·보기 전환 ─────────── */
+function setView(v){view=v;$('vIn').setAttribute('aria-pressed',v==='in');$('vCv').setAttribute('aria-pressed',v==='cv');renderView()}
+$('vIn').onclick=()=>setView('in');$('vCv').onclick=()=>setView('cv');
+$('prev').onclick=()=>{spreadIx--;renderView()};$('next').onclick=()=>{spreadIx++;renderView()};$('first').onclick=()=>{spreadIx=0;renderView()};$('last').onclick=()=>{spreadIx=1e6;renderView()};
+function route(){const m=/^#step-([1-6])$/.exec(location.hash);const n=m?+m[1]:1;
+ for(let i=1;i<=6;i++)$('p'+i).classList.toggle('on',i===n);
+ document.querySelectorAll('#steps a').forEach((a,i)=>{if(i+1===n)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});
+ if(n===3||n===5)ensureGrids();
+ if(n===5)setView('cv');else if(view==='cv'&&n!==6)setView('in');
+ if(m)window.scrollTo({top:0});}
+window.addEventListener('hashchange',route);
+window.addEventListener('resize',()=>{renderView();if(gridsDrawn)scaleThumbs()});
+let fT=0;document.fonts&&document.fonts.addEventListener('loadingdone',()=>{clearTimeout(fT);fT=setTimeout(()=>refresh(1),250)});
+// 인쇄 창 버튼은 Claude 화면 밖(예: 깃허브 페이지)에서만 보여요
+if(!window.claude)$('printPdf').hidden=false;
+refresh(1);route();
+}
+</script>
+</body>
+</html>
