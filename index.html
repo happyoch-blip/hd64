@@ -511,7 +511,7 @@ function bgSVG(T,w,h,mode,side,lh,seed){
   s+=`<g fill="#fff">${scatter(r,full?16:8,w,h,avoid,(x,y)=>`<ellipse cx="${x}" cy="${y}" rx="${3+r()*6}" ry="${1+r()*2}" fill-opacity="${.03+r()*.05}"/>`)}</g>`;break;
  case 'genkoji':{const fx=R?12:9,fy=13,fw=w-21,fh=h-26;s+=`<rect x="${fx}" y="${fy}" width="${fw}" height="${fh}" fill="none" stroke="${p.ac}" stroke-opacity=".55" stroke-width=".5"/><rect x="${fx+1}" y="${fy+1}" width="${fw-2}" height="${fh-2}" fill="none" stroke="${p.ac}" stroke-opacity=".4" stroke-width=".2"/>`;
   if(full){let t='';const c=7;for(let x=fx+4;x<fx+fw-c;x+=c+1.6)for(let y=fy+4;y<fy+fh-c;y+=c)t+=`<rect x="${x}" y="${y}" width="${c}" height="${c}"/>`;s+=`<g fill="none" stroke="${p.ac}" stroke-opacity=".35" stroke-width=".2">${t}</g>`}
-  else s+=`<text x="${w/2}" y="${h-7.5}" font-size="2.6" text-anchor="middle" fill="${p.ac}" fill-opacity=".6">20 × 10</text>`;break}
+  else s+=``;break}
  case 'polaroid':{const cn=(x,y,rot)=>`<path transform="translate(${x} ${y}) rotate(${rot})" d="M0 0 L8 0 L0 8 Z" fill="${p.ac}" fill-opacity=".55"/>`;
   s+=cn(tA[0]-3,tA[1]-3,0)+cn(tA[2]+3,tA[1]-3,90)+cn(tA[2]+3,tA[3]+3,180)+cn(tA[0]-3,tA[3]+3,270);
   if(full){const pf=(x,y,rot,c)=>`<g transform="rotate(${rot} ${x} ${y})"><rect x="${x-14}" y="${y-16}" width="28" height="32" fill="#fff" stroke="#000" stroke-opacity=".08" stroke-width=".3"/><rect x="${x-11.5}" y="${y-13.5}" width="23" height="22" fill="${c}"/></g>`;s+=pf(20,24,-10,p.sf)+pf(w-20,h-28,8,p.b2)+pf(w-16,30,12,p.ac)}break}
@@ -530,7 +530,7 @@ function bgSVG(T,w,h,mode,side,lh,seed){
   if(full)s+=pl(w*.22,h*.66,13,p.ac,1)+pl(w*.82,h*.84,8,p.b2,0)+`<path d="M${w*.6} ${h*.58} l6 -10 l6 10 z" fill="${p.tx}" fill-opacity=".8"/>`;break}
  case 'ticket':{let t='';for(let y=6;y<h;y+=6)t+=`<circle cx="${outX}" cy="${y}" r="1.4" fill="${p.sf}"/>`;s+=t;
   s+=`<line x1="${R?w-8:8}" x2="${R?w-8:8}" y1="4" y2="${h-4}" stroke="${p.ac}" stroke-opacity=".5" stroke-dasharray="1.6 1.2" stroke-width=".35"/>`;
-  s+=`<text x="${R?w-4.2:4.2}" y="${h/2}" font-size="2.6" fill="${p.ac}" fill-opacity=".7" text-anchor="middle" transform="rotate(90 ${R?w-4.2:4.2} ${h/2})">ADMIT ONE · 6-4</text>`;
+  
   if(full)s+=`<rect x="8" y="8" width="${w-16}" height="${h-16}" rx="4" fill="none" stroke="${p.b2}" stroke-width=".6"/><circle cx="0" cy="${h/2}" r="7" fill="${p.sf}"/><circle cx="${w}" cy="${h/2}" r="7" fill="${p.sf}"/>`;break}
  case 'sticky':{const st=(x,y,rot,c,z)=>`<g transform="rotate(${rot} ${x} ${y})"><rect x="${x}" y="${y}" width="${z}" height="${z}" fill="${c}"/><path d="M${x+z} ${y+z-5} L${x+z-5} ${y+z} L${x+z} ${y+z}Z" fill="#000" fill-opacity=".08"/></g>`;
   s+=st(R?w-22:6,3,R?6:-6,p.sf,15)+st(R?4:w-16,h-15,R?-5:5,p.b2,12);
@@ -549,7 +549,7 @@ function bgSVG(T,w,h,mode,side,lh,seed){
   s+=cloud(R?w-30:8,9,4.5,p.sf,1)+cloud(R?8:w-30,h-8,4,p.sf,1)+(full?`<rect width="${w}" height="${h*.55}" fill="${p.sf}" fill-opacity=".6"/>`+cloud(10,h*.3,7,'#fff',1)+cloud(w-46,h*.16,6,'#fff',.95)+cloud(w*.3,h*.7,5,p.sf,1)+`<circle cx="${w-18}" cy="${h*.42}" r="7" fill="${p.b2}"/>`:'');break;
  case 'bubbles':s+=scatter(r,full?24:12,w,h,avoid,(x,y)=>{const rr=1.4+r()*(full?7:3.5);return `<circle cx="${x}" cy="${y}" r="${rr}" fill="${r()<.5?p.sf:'#fff'}" fill-opacity=".7" stroke="${r()<.5?p.ac:p.b2}" stroke-opacity=".55" stroke-width=".35"/><path d="M${x-rr*.55} ${y-rr*.15} a${rr*.6} ${rr*.6} 0 0 1 ${rr*.45} ${-rr*.42}" fill="none" stroke="#fff" stroke-width="${Math.max(.25,rr*.12)}"/>`});break;
  case 'diary':{let t='';const x=R?5.5:w-5.5;for(let y=10;y<h-6;y+=8.5)t+=`<circle cx="${x}" cy="${y}" r="1.4" fill="${p.tx}" fill-opacity=".75"/><path d="M${R?0:w} ${y-2.2} Q ${R?7:w-7} ${y-3.5} ${x} ${y}" fill="none" stroke="#9aa0ad" stroke-width=".9"/>`;s+=t;
-  s+=`<rect x="${R?w-24:12}" y="9" width="12" height="4.5" rx="1" ${op(p.sf,1)}/><text x="${R?w-18:18}" y="12.3" font-size="2.6" text-anchor="middle" fill="${p.ac}">DIARY</text>`;
+  s+=`<rect x="${R?w-24:12}" y="9" width="12" height="4.5" rx="1" ${op(p.sf,1)}/>`;
   if(full)s+=lines(p.ac,.18,20,h-12);break}
  case 'map':
   s+=`<path d="M${R?w-6:6} ${h-8} C ${w*.2} ${h-4}, ${w*.9} ${h-16}, ${R?w-6:6} ${h*.5} S ${w*.5} 4, ${R?10:w-10} 8" fill="none" stroke="${p.ac}" stroke-opacity=".45" stroke-width=".5" stroke-dasharray="2 1.5"/><path d="M${R?6:w-14} 4 l8 8 m0 -8 l-8 8" stroke="${p.ac}" stroke-width=".9"/>`;
@@ -570,7 +570,7 @@ function bgSVG(T,w,h,mode,side,lh,seed){
   s+=strip(R?w-7:0,true);if(full)s+=strip(0,false)+strip(h-7,false)+`<rect x="${w*.15}" y="20" width="${w*.6}" height="40" fill="${p.b2}" fill-opacity=".6"/>`;break}
  case 'arcade':{const br=(x,y,dx,dy,c)=>`<path d="M${x} ${y+dy*8} V${y} H${x+dx*8}" fill="none" stroke="${c}" stroke-width="1.4"/>`;
   s+=br(5,5,1,1,p.ac)+br(w-5,5,-1,1,p.b2)+br(5,h-5,1,-1,p.b2)+br(w-5,h-5,-1,-1,p.ac);
-  s+=`<text x="${w/2}" y="9" font-size="2.8" text-anchor="middle" fill="${p.ac}" fill-opacity=".8" font-family="monospace">1UP 006400  HI 999999</text>`;
+  
   if(full){let t='';for(let i=-8;i<=8;i++)t+=`<line x1="${w/2+i*4}" y1="${h*.62}" x2="${w/2+i*18}" y2="${h}" />`;for(let y=h*.62,k=1;y<h;y+=k*2.4,k++)t+=`<line x1="0" x2="${w}" y1="${y}" y2="${y}"/>`;s+=`<g stroke="${p.b2}" stroke-opacity=".45" stroke-width=".35">${t}</g>`}break}
  case 'cornell':
   s+=lines(p.b2,.35);s+=`<line x1="${R?13:w-13}" x2="${R?13:w-13}" y1="0" y2="${h}" stroke="${p.ac}" stroke-width=".45"/><line x1="0" x2="${w}" y1="17" y2="17" stroke="${p.ac}" stroke-width=".3"/>`;
@@ -578,7 +578,7 @@ function bgSVG(T,w,h,mode,side,lh,seed){
   if(full)s+=`<path d="M14 ${h*.3} h${w-28} M18 ${h*.36} h${w*.5}" stroke="${p.sf}" stroke-width="6" stroke-linecap="round" stroke-opacity=".8"/>`;break;
  case 'library':
   s+=lines(p.b2,.2);s+=`<line x1="0" x2="${w}" y1="15" y2="15" stroke="${p.ac}" stroke-width=".6"/><line x1="0" x2="${w}" y1="16.2" y2="16.2" stroke="${p.ac}" stroke-width=".25"/><line x1="${R?w-30:30}" x2="${R?w-30:30}" y1="16" y2="${h}" stroke="${p.ac}" stroke-opacity=".3" stroke-width=".25"/><circle cx="${w/2}" cy="${h-6}" r="2.2" fill="${p.sf}" stroke="${p.b2}" stroke-opacity=".4" stroke-width=".3"/>`;
-  if(full)s+=`<g transform="rotate(-12 ${w*.75} ${h*.75})"><rect x="${w*.62}" y="${h*.7}" width="34" height="13" rx="2" fill="none" stroke="${p.ac}" stroke-width=".8"/><text x="${w*.62+17}" y="${h*.7+9}" font-size="6" text-anchor="middle" fill="${p.ac}" font-weight="bold">대출 중</text></g>`;break;
+  if(full)s+=`<g transform="rotate(-12 ${w*.75} ${h*.75})"><rect x="${w*.62}" y="${h*.7}" width="34" height="13" rx="2" fill="none" stroke="${p.ac}" stroke-width=".8"/><path d="M${w*.62+6} ${h*.7+6.5} h22 M${w*.62+6} ${h*.7+9} h14" stroke="${p.ac}" stroke-width="1"/></g>`;break;
  case 'crayon':{const cs=[p.ac,'#f8961e','#f9c74f','#90be6d',p.b2,'#7b6cf6'];const wave=(y0,amp,c)=>{let d=`M-2 ${y0}`;for(let x=0;x<=w+6;x+=6)d+=` Q ${x+3} ${y0+(x/6%2?amp:-amp)} ${x+6} ${y0}`;return `<path d="${d}" fill="none" stroke="${c}" stroke-width="1.6" stroke-linecap="round" stroke-opacity=".8"/>`};
   cs.forEach((c,i)=>{s+=wave(3+i*2,.9,c);s+=wave(h-3-i*2,.9,c)});if(full)cs.forEach((c,i)=>{s+=wave(h*.5+i*3.2,1.4,c)});break}
  }
