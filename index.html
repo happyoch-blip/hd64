@@ -693,7 +693,13 @@ function coverGeo(){const C=S.cover,n=BOOK.pages.length||50;const s=+(C.spine||e
 function coverName(){return (S.cover.author||'').trim()||S.author||'지은이'}
 function coverAu(){return `${S.cover.showCls!==false&&S.cls?esc(S.cls)+' ':''}${esc(coverName())} 지음`}
 function vchars(t){return [...t].map(c=>c===' '?'<span style="display:block;height:.45em"></span>':`<span style="display:block">${esc(c)}</span>`).join('')}
-function frontInner(T){
+function frontInner(T){const p=T.p,c='left:50%;transform:translateX(-50%)';
+ let pos={label:[c+';bottom:6.5mm',p.bg],center:[c+';bottom:7mm',p.bg],'e-moon':[c+';bottom:8mm',p.bg],'e-arch':[c+';bottom:7.5mm',p.bg],
+  poster:['right:11mm;bottom:9.6mm',p.ac],stack:['left:13mm;bottom:14.6mm',p.bg],'e-block':['right:16mm;bottom:15.6mm',p.ac],'e-line':['left:16mm;bottom:16.6mm',p.bg]}[T.cl]||['right:16mm;bottom:16.6mm',p.bg];
+ if(T.bg==='chalk')pos[0]='right:12mm;top:12mm'; // 분필 받침대를 피함
+ const logo=`<img src="${logoFor(pos[1])}" alt="BOOKK" style="position:absolute;${pos[0]};width:15mm">`;
+ return frontBody(T).trim().replace(/<\/div>$/,logo+'</div>')}
+function frontBody(T){
  const t=esc(S.title||'제목'),n=[...(S.title||'')].length,p=T.p;
  const big=n<=6?'34pt':n<=10?'28pt':n<=16?'23pt':'19pt';
  const au=coverAu();
