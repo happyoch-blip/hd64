@@ -177,9 +177,11 @@ ol.guide b{font-family:Jua;font-weight:400;font-size:18px}
 .fill-lines{position:absolute;top:44mm;width:93mm}
 .pg.R .fill-lines{left:18mm}.pg.L .fill-lines{left:16mm}
 .fill-lines i{display:block;height:10mm;border-bottom:.35mm solid var(--tx);opacity:.35}
-.colo{position:absolute;bottom:22mm;width:93mm;font-size:8pt;line-height:1.75;color:var(--tx);font-family:var(--bf)}
+.colo{position:absolute;bottom:22mm;width:93mm;font-size:8pt;line-height:1.75;color:#222;font-family:var(--bf)}
 .pg.R .colo{left:18mm}.pg.L .colo{left:16mm}
-.colo .ct{font-family:var(--tf);font-size:13pt;margin-bottom:1mm}
+.colo .ct{font-family:var(--tf);font-size:13pt;margin-bottom:.6mm;line-height:1.3}
+.colo .csub{font-size:8pt;opacity:.8}.colo .cg{height:3.2mm}.colo .cr{display:flex}.colo .ck{display:inline-block;width:15mm;flex:none;white-space:nowrap}.colo .cs{flex:none;margin-right:1.2mm;opacity:.6}
+.colo .clogo{display:block;width:13mm;margin-bottom:1.6mm}
 .colo hr{border:0;border-top:.3mm solid var(--tx);opacity:.5;margin:2mm 0}
 .guides{position:absolute;inset:0;pointer-events:none}
 
@@ -237,12 +239,32 @@ ol.guide b{font-family:Jua;font-weight:400;font-size:18px}
         <label class="f"><span>본문 글자 크기</span><select id="fs"><option value="10">10pt</option><option value="10.5">10.5pt</option><option value="11">11pt (권장)</option><option value="11.5">11.5pt</option><option value="12">12pt</option></select></label>
         <label class="f"><span>본문 글꼴</span><select id="bodyFont"><option value="">디자인 기본</option><option value="Gowun Dodum">고운돋움</option><option value="Nanum Gothic">나눔고딕</option><option value="Gowun Batang">고운바탕</option><option value="Nanum Myeongjo">나눔명조</option><option value="IBM Plex Sans KR">IBM Plex Sans KR</option></select></label>
       </div>
-      <div class="row">
-        <label class="f"><span>지도 교사 (선택)</span><input type="text" id="teacher" maxlength="20"></label>
+      <p class="note">반표제지(1쪽) → 판권(2쪽) → 속표지(3쪽) → (작가의 말) → 차례 → 나의 글 15편 순서로 자동 배치됩니다.</p>
+    </details>
+  </div>
+  <div class="card">
+    <h3>판권 (2쪽)</h3>
+    <p class="note" style="margin-top:-4px">부크크 판권 양식대로 들어가요. 도서명·발행일·저자는 위에서 쓴 내용이 들어가고, 나머지는 부크크 정보가 미리 채워져 있어요.</p>
+    <label class="f"><span>ISBN (부크크에서 받은 번호. 소장용이면 비워 두면 줄이 빠져요)</span><input type="text" id="isbn" maxlength="30" placeholder="979-11-12-00000-0"></label>
+    <details><summary>펴낸곳 정보 고치기</summary>
+      <div class="row" style="margin-top:8px">
+        <label class="f"><span>펴낸이</span><input type="text" id="pubPerson" maxlength="20"></label>
         <label class="f"><span>펴낸곳</span><input type="text" id="publisher" maxlength="30"></label>
       </div>
-      <label class="f"><span>ISBN (부크크에서 받은 뒤 넣고 PDF를 다시 만들어요. 소장용이면 비워 둬요)</span><input type="text" id="isbn" maxlength="30"></label>
-      <p class="note">반표제지 → 속표지 → (작가의 말) → 차례 → 나의 글 15편 → 판권 순서로 자동 배치됩니다.</p>
+      <div class="row">
+        <label class="f"><span>출판사등록</span><input type="text" id="pubReg" maxlength="40"></label>
+        <label class="f"><span>전화</span><input type="text" id="pubTel" maxlength="20"></label>
+      </div>
+      <label class="f"><span>주소</span><input type="text" id="pubAddr" maxlength="60"></label>
+      <div class="row">
+        <label class="f"><span>이메일</span><input type="text" id="pubMail" maxlength="40"></label>
+        <label class="f"><span>홈페이지</span><input type="text" id="pubWeb" maxlength="40"></label>
+      </div>
+      <div class="row">
+        <label class="f"><span>지도 교사 (선택 · 넣으면 한 줄 추가)</span><input type="text" id="teacher" maxlength="20"></label>
+        <label class="f"><span>저작권 문구</span><input type="text" id="pubNote" maxlength="60"></label>
+      </div>
+      <button class="btn alt sm" id="pubReset" type="button">부크크 양식대로 되돌리기</button>
     </details>
   </div>
   <div class="btns"><a class="btn" href="#step-2">다음: 나의 글 쓰기</a></div>
@@ -457,14 +479,15 @@ const TH=[
 
 /* ─────────── 상태 ─────────── */
 const today=new Date(); const iso=d=>d.toISOString().slice(0,10);
+const PUB=()=>({pubPerson:'한건희',publisher:'주식회사 부크크',pubReg:'2014.07.15.(제2014-16호)',pubAddr:'서울특별시 금천구 가산디지털1로 119 SK트윈타워 A동 305호',pubTel:'1670-8316',pubMail:'info@bookk.co.kr',pubWeb:'www.bookk.co.kr',pubNote:'본 책은 저작자의 지적 재산으로서 무단 전재와 복제를 금합니다.'});
 const DEF=()=>({title:'웃음 한 스푼, 6학년',sub:'열세 살 작가의 유쾌한 이야기 15편',author:'',cls:'6학년 4반',school:'',date:iso(new Date(today.getFullYear(),today.getMonth()+1,1)),
- fs:'11',bodyFont:'',teacher:'',publisher:'부크크',isbn:'',preface:'',
+ fs:'11',bodyFont:'',teacher:'',isbn:'',preface:'',...PUB(),
  w:TOPICS.map(t=>({topic:t.t,hint:t.h,title:t.t,text:'',img:null})),pool:0,
  rightStart:false,filler:'activity',theme:0,gray:false,
  cover:{theme:null,wing:false,spine:null,wingW:100,back:'',wingFront:'',wingBack:'6학년 4반 작가 프로젝트로 우리 반 친구들이 저마다 한 권씩 쓴 책입니다.',img:null,photo:null,author:'',showCls:true}});
 let S=DEF();
 const KEY='g6-4-author-project';
-try{const raw=localStorage.getItem(KEY); if(raw){const o=JSON.parse(raw); S=Object.assign(DEF(),o); S.cover=Object.assign(DEF().cover,o.cover||{}); if(!Array.isArray(S.w)||S.w.length!==15) S.w=DEF().w; if(typeof S.cover.theme==='number')S.cover.theme='t'+S.cover.theme;}}catch(e){}
+try{const raw=localStorage.getItem(KEY); if(raw){const o=JSON.parse(raw); S=Object.assign(DEF(),o); S.cover=Object.assign(DEF().cover,o.cover||{}); if(!Array.isArray(S.w)||S.w.length!==15) S.w=DEF().w; if(typeof S.cover.theme==='number')S.cover.theme='t'+S.cover.theme; if(S.publisher==='부크크')S.publisher='주식회사 부크크';}}catch(e){}
 let saveT=0;
 function persist(){clearTimeout(saveT);saveT=setTimeout(()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){try{const c=JSON.parse(JSON.stringify(S));c.w.forEach(w=>w.img=null);c.cover.img=null;c.cover.photo=null;localStorage.setItem(KEY,JSON.stringify(c));toast('그림은 브라우저에 다 저장되지 않아요. 작업 파일을 받아 두세요.')}catch(e2){}}},500)}
 
@@ -640,7 +663,7 @@ function buildBook(){
  const T=themeOf(S.theme);const flow=measureSetup(T);const v=vars(T);
  const P=[];const push=o=>P.push(o);
  const padOdd=()=>{if(P.length%2===1)push({k:'blank'})};
- push({k:'half'});push({k:'blank'});push({k:'tp'});push({k:'blank'});
+ push({k:'half'});push({k:'colo'});push({k:'tp'});push({k:'blank'});
  if(S.preface.trim()){const bl=[{t:'h',html:titleBlock(T,0,'작가의 말','PROLOGUE')}];S.preface.replace(/\r/g,'').split('\n').forEach(l=>{const s=l.trim();bl.push(s?{t:'p',text:s}:{t:'gap'})});
   paginate(flow,bl).forEach((h,j)=>push({k:'flow',html:h,sec:'작가의 말',first:j===0}))}
  padOdd();push({k:'toc'});padOdd();
@@ -649,9 +672,8 @@ function buildBook(){
   if(S.rightStart)padOdd();starts.push(P.length+1);
   paginate(flow,writingBlocks(T,w,i)).forEach((h,j)=>push({k:'flow',html:h,sec:w.title,first:j===0,wi:i}))});
  // 50쪽 이상 + 짝수, 마지막은 판권
- const total=Math.max(50,P.length+1+((P.length+1)%2));
- let f=0;while(P.length<total-1){push({k:S.filler==='blank'?'plain':'act',n:f++})}
- push({k:'colo'});
+ const total=Math.max(50,P.length+(P.length%2));
+ let f=0;while(P.length<total){push({k:S.filler==='blank'?'plain':'act',n:f++})}
  BOOK={pages:P,starts,T,lh:v.lh};
  return BOOK;
 }
@@ -675,9 +697,12 @@ function pageHTML(i,opt={}){
   case 'flow':c=`<div class="flow">${pg.html}</div>`;if(!pg.first)rh=`<div class="rh">${side==='L'?tt:esc(pg.sec)}</div>`;break;
   case 'act':{const a=ACTS[pg.n%ACTS.length];c=`<div class="fill-h">${a[0]}<div class="fill-s">${a[1]}</div></div>`+(a[2]==='box'?'<div class="fill-box"></div>':`<div class="fill-lines">${'<i></i>'.repeat(11)}</div>`);break}
   case 'plain':break;
-  case 'colo':num=false;c=`<div class="colo"><div class="ct">${tt}</div>${S.sub?esc(S.sub)+'<br>':''}<hr>발행일 ${fmtDate(S.date)}<br>지은이 ${esc(S.author||'')}${S.teacher?`<br>지도 교사 ${esc(S.teacher)}`:''}<br>펴낸곳 ${esc(S.publisher||'부크크')}${S.isbn?`<br>ISBN ${esc(S.isbn)}`:''}<hr>${esc(S.school?S.school+' ':'')}${esc(S.cls)} 작가 프로젝트로 만든 책입니다.<br>이 책의 글과 그림은 지은이의 것입니다. 허락 없이 옮겨 쓰지 마세요.</div>`;break;
+  case 'colo':{num=false;const yr=(S.date||'').slice(0,4)||String(new Date().getFullYear());const row=(k,v)=>v?`<div class="cr"><span class="ck">${k}</span><span class="cs">｜</span><span>${esc(v)}</span></div>`:'';
+   const dt=S.date?fmtDate(S.date):`${yr}년 00월 00일`;
+   c=`<div class="colo"><div class="ct">${tt||'도서명'}</div>${S.sub?`<div class="csub">${esc(S.sub)}</div>`:''}<div class="cg"></div>${row('발　행',dt)}${row('저　자',S.author||'저자명')}${row('펴낸이',S.pubPerson)}${row('펴낸곳',S.publisher)}${row('출판사등록',S.pubReg)}${row('주　소',S.pubAddr)}${row('전　화',S.pubTel)}${row('이메일',S.pubMail)}${S.teacher?row('지도 교사',S.teacher):''}${S.isbn?`<div class="cg"></div>${row('ISBN',S.isbn)}`:''}<div class="cg"></div><img class="clogo" src="${LOGO_K}" alt="BOOKK"><div>${esc(S.pubWeb)}</div><div>ⓒ ${esc(S.author||'저자명')} ${yr}</div><div>${esc(S.pubNote)}</div></div>`;break}
  }
  const pn=num?`<div class="pn"><i>${n}</i></div>`:'';
+ if(pg.k==='colo')return `<div class="${cls} white" style="${v.css}"><div class="tr">${c}${opt.guide?guideSVG(side):''}</div></div>`;
  return `<div class="${cls}" style="${v.css}">${bg}<div class="tr">${c}${rh}${pn}${opt.guide?guideSVG(side):''}</div></div>`;
 }
 function guideSVG(side){const R=side!=='L';const x=R?18:16;return `<svg class="guides" viewBox="0 0 ${PW} ${PH}" width="${px(PW)}" height="${px(PH)}" style="overflow:visible"><rect x="0" y="0" width="${PW}" height="${PH}" fill="none" stroke="#e6007e" stroke-width=".35"/><rect x="${x}" y="22" width="93" height="144" fill="none" stroke="#e6007e" stroke-width=".3" stroke-dasharray="1.5 1"/><rect x="5" y="5" width="${PW-10}" height="${PH-10}" fill="none" stroke="#00a0e9" stroke-width=".25" stroke-dasharray="1 1"/><line x1="${R?0:PW}" x2="${R?0:PW}" y1="0" y2="${PH}" stroke="#e6007e" stroke-width=".8"/></svg>`}
@@ -807,8 +832,9 @@ function renderView(){
 let rT=0;function refresh(now){clearTimeout(rT);const go=()=>{buildBook();renderView();stats();coverInfo();guideList();updateCount()};if(now)go();else rT=setTimeout(go,350)}
 
 /* ─────────── 입력 연결 ─────────── */
-const FIELDS=['title','sub','author','cls','school','date','fs','bodyFont','teacher','publisher','isbn','preface'];
+const FIELDS=['title','sub','author','cls','school','date','fs','bodyFont','teacher','isbn','preface','pubPerson','publisher','pubReg','pubAddr','pubTel','pubMail','pubWeb','pubNote'];
 FIELDS.forEach(k=>{const e=$(k);e.value=S[k]??'';e.addEventListener('input',()=>{S[k]=e.value;persist();refresh(k==='fs'||k==='bodyFont')})});
+$('pubReset').onclick=()=>{Object.assign(S,PUB());Object.keys(PUB()).forEach(k=>$(k).value=S[k]);persist();refresh(1);toast('부크크 판권 양식으로 되돌렸어요.')};
 $('rightStart').checked=S.rightStart;$('rightStart').onchange=e=>{S.rightStart=e.target.checked;persist();refresh(1)};
 $('filler').value=S.filler;$('filler').onchange=e=>{S.filler=e.target.value;persist();refresh(1)};
 $('gray').checked=S.gray;$('gray').onchange=e=>{S.gray=e.target.checked;persist();renderView()};
