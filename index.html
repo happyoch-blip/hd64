@@ -177,12 +177,11 @@ ol.guide b{font-family:Jua;font-weight:400;font-size:18px}
 .fill-lines{position:absolute;top:44mm;width:93mm}
 .pg.R .fill-lines{left:18mm}.pg.L .fill-lines{left:16mm}
 .fill-lines i{display:block;height:10mm;border-bottom:.35mm solid var(--tx);opacity:.35}
-.colo{position:absolute;bottom:22mm;width:93mm;font-size:8pt;line-height:1.75;color:#222;font-family:var(--bf)}
-.pg.R .colo{left:18mm}.pg.L .colo{left:16mm}
-.colo .ct{font-family:var(--tf);font-size:13pt;margin-bottom:.6mm;line-height:1.3}
-.colo .csub{font-size:8pt;opacity:.8}.colo .cg{height:3.2mm}.colo .cr{display:flex}.colo .ck{display:inline-block;width:15mm;flex:none;white-space:nowrap}.colo .cs{flex:none;margin-right:1.2mm;opacity:.6}
-.colo .clogo{display:block;width:13mm;margin-bottom:1.6mm}
-.colo hr{border:0;border-top:.3mm solid var(--tx);opacity:.5;margin:2mm 0}
+.colo{position:absolute;bottom:22mm;left:14mm;width:99mm;font-family:'바탕',Batang,'Nanum Myeongjo',serif;font-size:9pt;line-height:1.8;color:#000;text-align:justify;word-break:keep-all}
+.pg.R .colo,.pg.L .colo{left:14mm}
+.colo b{font-weight:700}
+.colo .ct{font-family:var(--tf);font-size:13pt;line-height:1.3;margin-bottom:.4mm;color:#000}
+.colo .cn{font-size:8pt}
 .guides{position:absolute;inset:0;pointer-events:none}
 
 /* ───── 표지 ───── */
@@ -244,8 +243,8 @@ ol.guide b{font-family:Jua;font-weight:400;font-size:18px}
   </div>
   <div class="card">
     <h3>판권 (2쪽)</h3>
-    <p class="note" style="margin-top:-4px">부크크 판권 양식대로 들어가요. 도서명·발행일·저자는 위에서 쓴 내용이 들어가고, 나머지는 부크크 정보가 미리 채워져 있어요.</p>
-    <label class="f"><span>ISBN (부크크에서 받은 번호. 소장용이면 비워 두면 줄이 빠져요)</span><input type="text" id="isbn" maxlength="30" placeholder="979-11-12-00000-0"></label>
+    <p class="note" style="margin-top:-4px">부크크 판권 양식(바탕 9pt, 줄간격 180%)대로 들어가요. 도서명·발행일·저자는 위에서 쓴 내용이 들어가고, 나머지는 부크크 정보가 미리 채워져 있어요. 바탕 글꼴이 없는 컴퓨터(맥·태블릿)에서는 나눔명조로 대신 찍혀요.</p>
+    <label class="f"><span>ISBN (부크크에서 받은 번호. 비워 두면 'ISBN｜' 자리만 남아요)</span><input type="text" id="isbn" maxlength="30" placeholder="979-11-12-00000-0"></label>
     <details><summary>펴낸곳 정보 고치기</summary>
       <div class="row" style="margin-top:8px">
         <label class="f"><span>펴낸이</span><input type="text" id="pubPerson" maxlength="20"></label>
@@ -261,7 +260,6 @@ ol.guide b{font-family:Jua;font-weight:400;font-size:18px}
         <label class="f"><span>홈페이지</span><input type="text" id="pubWeb" maxlength="40"></label>
       </div>
       <div class="row">
-        <label class="f"><span>지도 교사 (선택 · 넣으면 한 줄 추가)</span><input type="text" id="teacher" maxlength="20"></label>
         <label class="f"><span>저작권 문구</span><input type="text" id="pubNote" maxlength="60"></label>
       </div>
       <button class="btn alt sm" id="pubReset" type="button">부크크 양식대로 되돌리기</button>
@@ -700,9 +698,9 @@ function pageHTML(i,opt={}){
   case 'flow':c=`<div class="flow">${pg.html}</div>`;if(!pg.first)rh=`<div class="rh">${side==='L'?tt:esc(pg.sec)}</div>`;break;
   case 'act':{const a=ACTS[pg.n%ACTS.length];c=`<div class="fill-h">${a[0]}<div class="fill-s">${a[1]}</div></div>`+(a[2]==='box'?'<div class="fill-box"></div>':`<div class="fill-lines">${'<i></i>'.repeat(11)}</div>`);break}
   case 'plain':break;
-  case 'colo':{num=false;const yr=(S.date||'').slice(0,4)||String(new Date().getFullYear());const row=(k,v)=>v?`<div class="cr"><span class="ck">${k}</span><span class="cs">｜</span><span>${esc(v)}</span></div>`:'';
-   const dt=S.date?fmtDate(S.date):`${yr}년 00월 00일`;
-   c=`<div class="colo"><div class="ct">${tt||'도서명'}</div>${S.sub?`<div class="csub">${esc(S.sub)}</div>`:''}<div class="cg"></div>${row('발　행',dt)}${row('저　자',S.author||'저자명')}${row('펴낸이',S.pubPerson)}${row('펴낸곳',S.publisher)}${row('출판사등록',S.pubReg)}${row('주　소',S.pubAddr)}${row('전　화',S.pubTel)}${row('이메일',S.pubMail)}${S.teacher?row('지도 교사',S.teacher):''}${S.isbn?`<div class="cg"></div>${row('ISBN',S.isbn)}`:''}<div class="cg"></div><img class="clogo" src="${LOGO_K}" alt="BOOKK"><div>${esc(S.pubWeb)}</div><div>ⓒ ${esc(S.author||'저자명')} ${yr}</div><div>${esc(S.pubNote)}</div></div>`;break}
+  case 'colo':{num=false;const yr=(S.date||'').slice(0,4)||String(new Date().getFullYear());
+   const row=(k,v)=>`<div><b>${k}</b>｜${esc(v||'')}</div>`;const dt=S.date?fmtDate(S.date):`${yr}년 00월 00일`;const au=S.author||'저자명';
+   c=`<div class="colo"><div class="ct">${tt||'도서명'}</div><div>&nbsp;</div>${row('발&nbsp;&nbsp;행',dt)}${row('저&nbsp;&nbsp;자',au)}${row('펴낸이',S.pubPerson)}${row('펴낸곳',S.publisher)}${row('출판사등록',S.pubReg)}${row('주&nbsp;&nbsp;소',S.pubAddr)}${row('전&nbsp;&nbsp;화',S.pubTel)}${row('이메일',S.pubMail)}<div>&nbsp;</div>${row('ISBN',S.isbn)}<div>&nbsp;</div><div><b>${esc(S.pubWeb)}&nbsp;</b></div><div><b>ⓒ ${esc(au)} ${yr}</b></div><div class="cn">${esc(S.pubNote)}</div></div>`;break}
  }
  const pn=num?`<div class="pn"><i>${n}</i></div>`:'';
  if(pg.k==='colo')return `<div class="${cls} white" style="${v.css}"><div class="tr">${c}${opt.guide?guideSVG(side):''}</div></div>`;
@@ -835,7 +833,7 @@ function renderView(){
 let rT=0;function refresh(now){clearTimeout(rT);const go=()=>{buildBook();renderView();stats();coverInfo();guideList();updateCount()};if(now)go();else rT=setTimeout(go,350)}
 
 /* ─────────── 입력 연결 ─────────── */
-const FIELDS=['title','sub','author','cls','school','date','fs','bodyFont','teacher','isbn','preface','pubPerson','publisher','pubReg','pubAddr','pubTel','pubMail','pubWeb','pubNote'];
+const FIELDS=['title','sub','author','cls','school','date','fs','bodyFont','isbn','preface','pubPerson','publisher','pubReg','pubAddr','pubTel','pubMail','pubWeb','pubNote'];
 FIELDS.forEach(k=>{const e=$(k);e.value=S[k]??'';e.addEventListener('input',()=>{S[k]=e.value;persist();refresh(k==='fs'||k==='bodyFont')})});
 $('pubReset').onclick=()=>{Object.assign(S,PUB());Object.keys(PUB()).forEach(k=>$(k).value=S[k]);persist();refresh(1);toast('부크크 판권 양식으로 되돌렸어요.')};
 $('rightStart').checked=S.rightStart;$('rightStart').onchange=e=>{S.rightStart=e.target.checked;persist();refresh(1)};
